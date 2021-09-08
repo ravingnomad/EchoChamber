@@ -1,9 +1,9 @@
 import pickle
-from userInterface import *
+from userInfoInterface import *
   
   
 def main() -> None:
-    interface = userInterface()
+    interface = userInfoInterface()
     interface.loadUserInfo()
 
 

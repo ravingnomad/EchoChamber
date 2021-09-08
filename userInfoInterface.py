@@ -1,17 +1,15 @@
 import pickle
 
-class userInterface():
+class userInfoInterface():
     
     def __init__(self):
         self.userInfo = {}
         self.pickleFile = {}
-        self.isClient = False
-        self.serverAddress = ""
-        self.userRecentCommand = ""
         self.supportedCarrierSMS = {"at&t": "@txt.att.net",
                                     "tmobile": "@tmomail.net"
                                     }
-        
+     
+     
     def loadUserInfo(self) -> None:
         try:
             with open("users.pickle", "rb") as pickleFile:
@@ -19,46 +17,18 @@ class userInterface():
                 print("Loaded user pickle file\n")
         except FileNotFoundError:
             print("No user file found. Using default empty dict\n")
-        
-        
+       
+       
     def saveUserInfo(self) -> None:
         with open("users.pickle", "wb") as pickleFile:
             pickle.dump(self.userInfo, pickleFile)
-        print("\nSaved userinfo in pickle file\n")
+        print("\nSaved userinfo in pickle file\n")  
+        
+        
     def getUserInfo(self) -> dict:
-        return self.userInfo
-        
-        
-    def getIsClient(self) -> bool:
-        return self.isClient
-        
-        
-    def getServerAddress(self) -> str:
-        return self.serverAddress
-        
-        
-    def getRecentCommand(self) -> str:
-        temp = self.userRecentCommand
-        self.userRecentCommand = "" #reset so subsequent calls don't use old commands
-        return temp
+        return self.userInfo  
     
     
-    def promptIsClient(self) -> None:
-        userResponse = input("Is this machine a client? (y/n) \n ->")
-        while userResponse not in ('y', 'n'):
-            self._incorrectResponse()
-            userResponse = input("Is this machine a client? (y/n) \n ->")
-        self.isClient = userResponse == "y"
-    
-    
-    def promptServerAddress(self) -> None:
-        self.serverAddress = input("Enter server ip address \n ->")
-    
-    
-    def promptClientCommand(self) -> None:
-        None
-            
-        
     def addUserInfo(self) -> None:
         username = self._promptUsername()
         phoneNumber = self._promptPhoneNumber()
@@ -138,7 +108,6 @@ class userInterface():
             self._editUserInfoHelper(answer)
         
         
-        
     def _editUserInfoHelper(self, username: str) -> None:
         action = input("\nChange one of the fields below by entering '[field name] : [new info]'\n" \
                        + self._userInfoPrintString(username) + \
@@ -167,5 +136,3 @@ class userInterface():
     def _incorrectResponse(self) -> None:
         print("ERROR: Incorrect response\n")
         
-    
-    
