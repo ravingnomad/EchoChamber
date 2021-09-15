@@ -33,8 +33,12 @@ class userInfoInterface():
         username = self._promptUsername()
         phoneNumber = self._promptPhoneNumber()
         phoneCarrier = self._promptPhoneCarrier()
+        emailAddr = self._promptEmailAddr()
+        emailPwd = self._promptEmailPwd()
         self.userInfo[username] = {}
         self.userInfo[username]['SMS'] = self._formatSMS(phoneNumber, phoneCarrier)
+        self.userInfo[username]['Email Address'] = emailAddr
+        self.userInfo[username]['Email Password'] = emailPwd
         
         
     def _promptUsername(self) -> str:
@@ -51,7 +55,7 @@ class userInfoInterface():
                 name = input("\nEnter new username\n" \
                              "->")
             else:
-                self._incorrectResponse()
+                print("ERROR: Incorrect response\n")
         return name
     
     
@@ -59,7 +63,7 @@ class userInfoInterface():
         phoneNumber = input("\nEnter phone number (no dashes or spaces)\n" \
                             "->")
         while len(phoneNumber) != 10 or sum(1 for x in phoneNumber if str.isdigit(x)) != 10:
-            self._incorrectResponse()
+            print("ERROR: Incorrect response\n")
             phoneNumber = input("\nEnter phone number (no dashes or spaces)\n" \
                                 "->")
         return phoneNumber
@@ -70,11 +74,23 @@ class userInfoInterface():
                              + self._supportedCarriersPrintString() + \
                              "->")
         while phoneCarrier not in self.supportedCarrierSMS.keys():
-            self._incorrectResponse()
+            print("ERROR: Incorrect response\n")
             phoneCarrier = input("\nChoose from supported phone carriers: \n"\
                      + self._supportedCarriersPrintString() + \
                      "->")
         return phoneCarrier
+    
+    
+    def _promptEmailAddr(self) -> str:
+        emailAddress = input("\nEnter email address to use\n"\
+                         "->")
+        return emailAddress
+        
+        
+    def _promptEmailPwd(self) -> str:
+        emailPassword = input("\nEnter password for above email address\n"\
+                         "->")
+        return emailPassword
         
         
     def _formatSMS(self, phoneNumber: str, carrier: str) -> str:
@@ -119,7 +135,7 @@ class userInfoInterface():
                 if key in self.userInfo[username].keys():
                     self.userInfo[username][key] = value
             else:
-                self._incorrectResponse()
+                print("ERROR: Incorrect response\n")
             action = input("\nChange one of the fields below by entering '[field name] : [new info]\n" \
                + self._userInfoPrintString(username) + \
                "'q' to quit\n"
@@ -133,6 +149,4 @@ class userInfoInterface():
         return returnStr
     
     
-    def _incorrectResponse(self) -> None:
-        print("ERROR: Incorrect response\n")
         
