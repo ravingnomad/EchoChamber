@@ -4,7 +4,7 @@ import sys
 import os
 from connection import *
 
-class Client(Connection):
+class echoChamberClient(Connection):
 
     def __init__(self, serverName, port):
         Connection.__init__(self, None)
@@ -124,7 +124,6 @@ class Client(Connection):
             self._sendData("Error found")
             
 
-
     def _commandErrors(self, command) -> bool:
         """Takes a command, split by its white spaces, and sees if it is formatted correctly. If it is,
         return 'False' as in there are no errors. Otherwise, return 'True'
@@ -187,10 +186,10 @@ class Client(Connection):
         return extension in self.supportedTypes
 
     
-if __name__ == "__main__":
-    server = None
-    port = None
-    #test = Client()
-    test = Client(server, port)
-    test.start()
+# if __name__ == "__main__":
+#     server = None
+#     port = None
+#     #test = Client()
+#     test = Client(server, port)
+#     test.start()
     
