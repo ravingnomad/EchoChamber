@@ -7,7 +7,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from connection import *
 
-class Server(Connection):
+class echoChamberServer(Connection):
 
     def __init__(self, name, port):
         Connection.__init__(self, None)
@@ -16,8 +16,12 @@ class Server(Connection):
         self.clientConn = None
         self.clientAddr = None
         self.endConn = False
-        self.validPhones = {}
+        self.validUsers = {}
 
+
+    def loadUserInfo(self, userInfo: dict) -> None:
+        self.validUsers = userInfo
+    
 
     def _mainLoop(self):
         """Main loop where server waits for a client command and performs that
@@ -54,7 +58,7 @@ class Server(Connection):
             recipient = command[1]
             fileName = command[2]
             
-            if recipient not in self.validPhones.keys():
+            if recipient not in self.validUsers.keys():
                 print("ERROR: recipient not valid.")
                 self._sendData("ERROR: not a valid recipient.")
                 return
@@ -115,9 +119,7 @@ class Server(Connection):
                 file = file.read()
             os.remove('output.{}'.format(extension))
 
-        """If file does not need to be compressed, OR compression for that file type not
-        supported."""
-        if file == None and extension.lower() != 'txt':
+        elif file == None and extension.lower() != 'txt':
             with open(fileName, 'rb') as file:
                 file = file.read()
         else:
@@ -131,6 +133,11 @@ class Server(Connection):
             encoders.encode_base64(data)
             data.add_header('Content-Disposition', 'attachment', filename = fileName)
             msg.attach(data)
+            msg['Subject'] = 'subject'
+            msg['From'] = 'us'
+            msg['To'] = 'us'
+            text = MIMEText("test")
+            msg.attach(text)
 
         elif extension.lower() == 'txt':
             text = MIMEText(file, _charset = "UTF-8")
@@ -148,8 +155,8 @@ class Server(Connection):
             
         server = smtplib.SMTP("smtp.gmail.com", 587, None, 30)
         server.starttls()
-        server.login()
-        server.sendmail('computer', self.validPhones[recipient], msg.as_string())
+        server.login(self.validUsers[recipient]['Email Address'], self.validUsers[recipient]['Email Password'])
+        server.sendmail('computer', self.validUsers[recipient]['SMS'], msg.as_string())
         server.close()
         
 
@@ -160,7 +167,7 @@ class Server(Connection):
         statement stating so. For now, can only compress webm and mp4 files."""
         encoder = None
         crf = 0
-        output = fileName + '.' + extension
+        output = 'output.' + extension
         result = "File compressed. Sending to recipient."
         if extension.lower() == 'mp4':
             crf = 30
@@ -171,7 +178,7 @@ class Server(Connection):
    
         inD = {fileName: None}
         outD = {output: '-c:v {} -crf {}'.format(encoder, crf)}
-        ff = ffmpy.FFmpeg(executable = 'C:\\ffmpeg-20190926-525de95-win64-static\\bin\\ffmpeg.exe', inputs = inD, outputs = outD)
+        ff = ffmpy.FFmpeg(executable = 'C:\\ffmpeg\\bin\\ffmpeg.exe', inputs = inD, outputs = outD)
         print("Running FFmpeg command: " + ff.cmd)
         ff.run()
 
@@ -189,6 +196,7 @@ class Server(Connection):
             file.write(data)
         print("Finished copying file\n")
 
+
     def _fileTooBig(self, fileName):
         fileStats = os.stat(fileName)
         size = fileStats.st_size
@@ -196,9 +204,9 @@ class Server(Connection):
             return True
         return False
 
-if __name__ == "__main__":
-    test = Server()
-    test._mainLoop()
+# if __name__ == "__main__":
+#     
+#     test._mainLoop()
 
     #anything greater than 1.5 needs to be compressed. Upper limit exists at around 4MB as compression
     #only takes it down to 1.8
