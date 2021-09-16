@@ -201,13 +201,47 @@ class echoChamberServer(Connection):
             return True
         return False
 
-# if __name__ == "__main__":
-#     
-#     test._mainLoop()
 
-    #anything greater than 1.5 needs to be compressed. Upper limit exists at around 4MB as compression
-    #only takes it down to 1.8
+    def _displayFiles(self, command):
+        '''Displays files, one file per line. Includes sizes of files in megabytes if optional command included, rounded to two decimal places.'''
+        if len(command) == 2:
+            for file in os.listdir():
+                statinfo = os.stat(file)
+                size = statinfo.st_size / 1000000
+                print(file + '\t' + str(round((size), 2)) + " MB")
+            print('\n')
+            
+        else:
+            for file in os.listdir():
+                print(file)
+            print('\n')
 
+
+    def _fileExists(self, fileName):
+        '''Check if file exists in the immediate directory'''
+        return fileName in os.listdir()
+    
+    
+    def _fileCorrectType(self, fileName):
+        '''text, PNG, IMG, GIF, and WEBM'''
+        extension = fileName.split('.')[1]
+        return extension in self.supportedTypes
+
+
+    def _sendFile(self, fileName):
+        """Sends a file over to the server to be saved. Will print a message once it is
+        done sending the file."""
+        try:
+            with open(fileName, 'rb') as file:
+                self._sendData("File Exists")
+                buffer = file.read()
+                readyToSend = self._recvData()
+                if readyToSend.decode() == "Ready to receive file.":
+                    print("Sending File to Server\n")
+                    self._sendData(buffer)
+        except FileNotFoundError:
+            print("ERROR: File {} does not exist.\n".format(fileName))
+            self._sendData("Error found")
 
                 
 

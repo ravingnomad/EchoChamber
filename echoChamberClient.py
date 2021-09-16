@@ -82,21 +82,6 @@ class echoChamberClient(Connection):
         return False
 
     
-    def _displayFiles(self, command):
-        '''Displays files, one file per line. Includes sizes of files in megabytes if optional command included, rounded to two decimal places.'''
-        if len(command) == 2:
-            for file in os.listdir():
-                statinfo = os.stat(file)
-                size = statinfo.st_size / 1000000
-                print(file + '\t' + str(round((size), 2)) + " MB")
-            print('\n')
-            
-        else:
-            for file in os.listdir():
-                print(file)
-            print('\n')
-
-        
     def _requestSMSLog(self):
         """Requests a text log from the server that details the phone/contact info
         of individuals that server has stored in order to send text messages. Does not
@@ -108,20 +93,7 @@ class echoChamberClient(Connection):
                 print(line)
         print('\n')
 
-    def _sendFile(self, fileName):
-        """Sends a file over to the server to be saved. Will print a message once it is
-        done sending the file."""
-        try:
-            with open(fileName, 'rb') as file:
-                self._sendData("File Exists")
-                buffer = file.read()
-                readyToSend = self._recvData()
-                if readyToSend.decode() == "Ready to receive file.":
-                    print("Sending File to Server\n")
-                    self._sendData(buffer)
-        except FileNotFoundError:
-            print("ERROR: File {} does not exist.\n".format(fileName))
-            self._sendData("Error found")
+
             
 
     def _commandErrors(self, command) -> bool:
@@ -176,20 +148,8 @@ class echoChamberClient(Connection):
         return False
 
 
-    def _fileExists(self, fileName):
-        '''Check if file exists in the immediate directory'''
-        return fileName in os.listdir()
 
-    def _fileCorrectType(self, fileName):
-        '''text, PNG, IMG, GIF, and WEBM'''
-        extension = fileName.split('.')[1]
-        return extension in self.supportedTypes
+
 
     
-# if __name__ == "__main__":
-#     server = None
-#     port = None
-#     #test = Client()
-#     test = Client(server, port)
-#     test.start()
     
