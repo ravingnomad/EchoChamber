@@ -29,6 +29,12 @@ class userInfoInterface():
         return self.userInfo  
     
     
+    def printAllUserInfo(self) -> None:
+        for name in self.userInfo.keys():
+            print(name)
+            print(self._userInfoPrintString(name))
+    
+    
     def addUserInfo(self) -> None:
         username = self._promptUsername()
         phoneNumber = self._promptPhoneNumber()
@@ -100,7 +106,7 @@ class userInfoInterface():
         answer = self._promptUserForAnswer('editUserInfo')
         while answer != 'q' and answer not in self.userInfo.keys():
             if answer == 'ls':
-                print(self.getUserInfo())
+                self.printAllUserInfo()
             else:
                 print("ERROR: User does not exist\n")
             answer = self._promptUserForAnswer('editUserInfo')
@@ -127,7 +133,7 @@ class userInfoInterface():
         for fieldName in self.userInfo[username].keys():
             returnStr += str(fieldName) + " : " + self.userInfo[username][fieldName] + "\n"
         return returnStr
-    
+            
     
     def _promptUserForAnswer(self, functionName, *args) -> str:
         functionNamesDict = {
