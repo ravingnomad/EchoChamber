@@ -15,7 +15,7 @@ class echoChamberServer(Connection):
         self.port = port
         self.clientConn = None
         self.clientAddr = None
-        self.endConn = False
+        self.endConnection = False
         self.validUsers = {}
 
 
@@ -23,19 +23,18 @@ class echoChamberServer(Connection):
         self.validUsers = userInfo
     
 
-    def _mainLoop(self):
-        """Main loop where server waits for a client command and performs that
-        command, as well as sending messages to the client in order to
-        communicate when certain actions can be taken or what is going on on the
-        server's side of things"""
+    def waitForClient(self) -> None:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.bind((self.name, self.port))
             s.listen()
             self.socket, self.clientAddr = s.accept()
             print("Connected to client at {}".format(self.clientAddr))
-            with self.socket:
-                while not self.endConn:
-                    self._waitCommands()
+
+
+    def start(self) -> None:
+        with self.socket:
+            while self.endConnection == False:
+                self._waitCommands()
                     
 
     def _waitCommands(self):
