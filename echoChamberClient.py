@@ -12,43 +12,34 @@ class echoChamberClient(Connection):
         self.port = port
         self.commands = ['send', 'sendSMS', 'SMSLog', 'help', 'ls', 'q']
         self.supportedTypes = ["png", "PNG", "GIF", "gif", "TXT", "txt", "WEBM", "webm", "MP4", "mp4"]
+        self.abort = False
 
-    def start(self):
-        """Starts the connection between server and client. Will tell user if connection
-        is established or if there was an issue with connecting to the server. Once
-        connected, will start the main loop."""
+
+    def connectToServer(self) -> None:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as self.socket:
-            #try:
-            self.socket.connect((self.server, self.port))
-            print("Successfully connected to {}\n".format(self.server))
-            self.mainLoop()
-            #except:
-            print("ERROR: Could not establish connection.\n")
+            try:
+                self.socket.connect((self.server, self.port))
+                print("Successfully connected to {}\n".format(self.server))
+                self.mainLoop()
+            except Exception as e:
+                print(e)
+                print("ERROR: Could not establish connection.\n")
         
 
-        
-    def mainLoop(self):
-        """The main loop where the interaction between client and server takes place."""
-        while True:
+    def start(self) -> None:
+        print("\nEnter a command. Type 'help' for commands and formatting\n")
+        while self.abort == False:
             message = input("->")
-            abort = self._commands(message)
-            if abort:
-                break
-    
-    
-    def _commands(self, command):
-        """Takes a command that the user inputs and determines whether it is valid or not.
-        If valid, calls the appropriate function. If not, tells the user the command is
-        invalid. Additionally, constantly returns a bool that states whether or not the
-        client wants to terminate the connection."""
-        check = command.split(' ')
-        if self._commandErrors(check) == False:
-            
-            if check[0] == 'q':
-                self._sendData('q')
-                return True
+            self._processCommands(message)
 
-            elif check[0] == "sendSMS":
+    
+    def _processCommands(self, userInput: str) -> None:
+        command, *args = userInput.split(' ')
+        if self._commandHasErrors(command) == False:
+            if command == 'q':
+                self._sendData('q')
+                self.abort = True
+            elif command == "sendSMS":
                 self._sendData(command)
                 checkError = self._recvData().decode()
                 if checkError == "Recipient Found":
@@ -59,44 +50,28 @@ class echoChamberClient(Connection):
                 else:
                     print(checkError + '\n')
             
-            elif check[0] == "send":
+            elif command == "send":
                 fileName = check[1]
                 self._sendData(command)
                 self._sendFile(fileName)
 
-            elif check[0] == "SMSLog":
+            elif command == "SMSLog":
                 '''Get message from server detailing the logged sms info'''
                 self._sendData(command)
                 self._requestSMSLog()
                 
-            elif check[0] == "ls":
-                self._displayFiles(check)
+            elif command == "ls":
+                self._displayFiles()
 
-            elif check[0] == "help":
+            elif command == "help":
                 print("Commands:\n")
                 print("\t\"send\" [file name with extension] [optional: new file name]:  makes a copy of specified file and sends it to receiving server. Will save file on server-side with new name if specified.\n")
                 print("\t\"sendSMS\" [name of recipient] [file name with extension]: sends a file and recipient name to the server so that file can be converted to email and texted to recipient's phone. Limited to text, PNG, IMG, GIF, and WEBM files.\n")
                 print("\t\"SMSLog\": receive information from server describing what phone contacts are available for use along with a small description of who\what they are\n")
-                print("\t\"q\": terminates connection with server-side. In current condition, also shuts down server.\n")
-                print("\t\"ls\" [optional: '-s']: lists the files that are currently in the directory. If '-s' included, also displays file size in megabytes, rounded to 2 decimal places.\n\n")        
-        return False
+                print("\t\"ls\" : lists the files that are currently in the directory.\n\n")
+                print("\t\"q\": terminates connection with server-side. In current condition, also shuts down server.\n")        
 
-    
-    def _requestSMSLog(self):
-        """Requests a text log from the server that details the phone/contact info
-        of individuals that server has stored in order to send text messages. Does not
-        reveal info about individual's carrier nor phone number"""
-        info = self._recvData()
-        info = info.decode("ascii").split("\n\n")
-        for line in info:
-            if line != "END":
-                print(line)
-        print('\n')
-
-
-            
-
-    def _commandErrors(self, command) -> bool:
+    def _commandHasErrors(self, command) -> bool:
         """Takes a command, split by its white spaces, and sees if it is formatted correctly. If it is,
         return 'False' as in there are no errors. Otherwise, return 'True'
         as in there is an error."""
@@ -146,8 +121,22 @@ class echoChamberClient(Connection):
             return True
 
         return False
+    
+    def _requestSMSLog(self):
+        """Requests a text log from the server that details the phone/contact info
+        of individuals that server has stored in order to send text messages. Does not
+        reveal info about individual's carrier nor phone number"""
+        info = self._recvData()
+        info = info.decode("ascii").split("\n\n")
+        for line in info:
+            if line != "END":
+                print(line)
+        print('\n')
 
-
+    def _displayFiles(self):
+        for file in os.listdir():
+            print(file)
+        print('\n')
 
 
 
