@@ -34,54 +34,52 @@ class echoChamberServer(Connection):
     def start(self) -> None:
         with self.socket:
             while self.endConnection == False:
-                self._waitCommands()
+                self._waitForCommands()
                     
 
-    def _waitCommands(self):
-        """Waits for a client command  to be sent from the client to the
-        server. Parses that command, then calls appropriate method."""
+    def _waitForCommands(self):
         data = self._recvData()
-        command = data.decode().split(" ")
-    
-        if command[0] == "send":
-            print("Client wants to send a file.")
-            noErrors = self._recvData().decode()
-            if (noErrors == "File Exists"):
-                self._copyFile(command[-1])
-            elif (noErrors == "Error found"):
-                print("Client found error(s) when trying to open file. Stopping command execution.")
-                return
-
-        elif command[0] == "sendSMS":
-            print("Client wants to text a file to a valid recipient.")
-            recipient = command[1]
-            fileName = command[2]
-            
-            if recipient not in self.validUsers.keys():
-                print("ERROR: recipient not valid.")
-                self._sendData("ERROR: not a valid recipient.")
-                return
-            else:
-                self._sendData("Recipient Found")
+        command, *args = data.decode().split(" ")
+        if command == "send":
+            self._sendFile(args[0])
+        elif command == "sendSMS":
+            recipient = args[0]
+            fileName = args[1]
+            if self._smsRecipientValid(recipient) == True:
                 noErrors = self._recvData().decode()
                 if (noErrors == "File Exists"):
                     self._copyFile(fileName)
                     self._textFile(recipient, fileName)
-                    
                 elif (noErrors == "Error found"):
-                    print("Client found error(s) when trying to open file. Stopping command execution.")
-                    return
-
-        elif command[0] == "SMSLog":
-            print("Client wants to see information about SMS contacts")
+                    print("\nClient found error(s) when trying to open file. Stopping command execution\n")
+        elif command == "SMSLog":
             self._sendSMSInfo()
-            return
-            
-        elif command[0] == "q":
+        elif command == "q":
             self.endConn = True
 
+    
+    def _sendFile(self, fileName: str) -> None:
+        print("\nClient wants to send a file\n")
+        noErrors = self._recvData().decode()
+        if (noErrors == "File Exists"):
+            self._copyFile(fileName)
+        elif (noErrors == "Error found"):
+            print("\nClient found error(s) when trying to open file. Stopping command execution\n")
 
+
+    def _smsRecipientValid(self, recipientName: str) -> bool:
+        print("\nClient wants to text a file to a valid recipient\n")
+        if recipientName not in self.validUsers.keys():
+            print("ERROR: recipient not valid\n")
+            self._sendData("ERROR: not a valid recipient.")
+            return False
+        else:
+            self._sendData("Recipient Found")
+            return True
+            
+            
     def _sendSMSInfo(self):
+        print("\nClient wants to see information about SMS contacts\n")
         log = None
         with open("SMSLog.txt", 'r', encoding = 'latin-1') as file:
             log = file.read()
