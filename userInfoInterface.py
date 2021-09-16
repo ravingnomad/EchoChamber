@@ -42,8 +42,7 @@ class userInfoInterface():
         
         
     def _promptUsername(self) -> str:
-        name = input("\nEnter new username\n"\
-                         "->")
+        name = self._promptUserForAnswer('promptUsername')
         while name in self.userInfo.keys():
             overwriteOriginal = input("WARNING: username '" + name + "' already exists. " \
                                       "Continuing will overwrite original entry for username '" + name + "'. " \
@@ -52,32 +51,25 @@ class userInfoInterface():
             if overwriteOriginal == 'y':
                 break;
             elif overwriteOriginal == 'n':
-                name = input("\nEnter new username\n" \
-                             "->")
+                name = self._promptUserForAnswer('promptUsername')
             else:
                 print("ERROR: Incorrect response\n")
         return name
     
     
     def _promptPhoneNumber(self) -> str:
-        phoneNumber = input("\nEnter phone number (no dashes or spaces)\n" \
-                            "->")
+        phoneNumber = self._promptUserForAnswer('promptPhoneNumber')
         while len(phoneNumber) != 10 or sum(1 for x in phoneNumber if str.isdigit(x)) != 10:
             print("ERROR: Incorrect response\n")
-            phoneNumber = input("\nEnter phone number (no dashes or spaces)\n" \
-                                "->")
+            phoneNumber = self._promptUserForAnswer('promptPhoneNumber')
         return phoneNumber
         
         
     def _promptPhoneCarrier(self) -> str:
-        phoneCarrier = input("\nChoose from supported phone carriers: \n" \
-                             + self._supportedCarriersPrintString() + \
-                             "->")
+        phoneCarrier = self._promptUserForAnswer('promptPhoneCarrier')
         while phoneCarrier not in self.supportedCarrierSMS.keys():
             print("ERROR: Incorrect response\n")
-            phoneCarrier = input("\nChoose from supported phone carriers: \n"\
-                     + self._supportedCarriersPrintString() + \
-                     "->")
+            phoneCarrier = self._promptUserForAnswer('promptPhoneCarrier')
         return phoneCarrier
     
     
@@ -105,30 +97,21 @@ class userInfoInterface():
         
         
     def editUserInfo(self) -> None:
-        answer = input("\nEnter username to edit\n" \
-                       "Enter 'ls' to see all users\n" \
-                       "Enter 'q' to quit\n" \
-                       "->")
+        answer = self._promptUserForAnswer('editUserInfo')
         while answer != 'q' and answer not in self.userInfo.keys():
             if answer == 'ls':
                 print(self.getUserInfo())
             else:
                 print("ERROR: User does not exist\n")
-            answer = input("\nEnter username to edit\n" \
-                           "Enter 'ls' to see all users\n" \
-                           "Enter 'q' to quit \n" \
-                           "->")
+            answer = self._promptUserForAnswer('editUserInfo')
         if answer == 'q':
             return
         else:
-            self._editUserInfoHelper(answer)
+            self._editUserInfoChangeField(answer)
         
         
-    def _editUserInfoHelper(self, username: str) -> None:
-        action = input("\nChange one of the fields below by entering '[field name] : [new info]'\n" \
-                       + self._userInfoPrintString(username) + \
-                       "'q' to quit\n"
-                       "->")
+    def _editUserInfoChangeField(self, username: str) -> None:
+        action = self._promptUserForAnswer('userInfoChangeField', username)
         while action != 'q':
             if len(action.split(" : ")) == 2:
                 key, value = action.split(" : ")
@@ -136,10 +119,7 @@ class userInfoInterface():
                     self.userInfo[username][key] = value
             else:
                 print("ERROR: Incorrect response\n")
-            action = input("\nChange one of the fields below by entering '[field name] : [new info]\n" \
-               + self._userInfoPrintString(username) + \
-               "'q' to quit\n"
-               "->")
+            action = self._promptUserForAnswer('userInfoChangeField', username)
         
         
     def _userInfoPrintString(self, username: str) -> str:
@@ -148,5 +128,31 @@ class userInfoInterface():
             returnStr += str(fieldName) + " : " + self.userInfo[username][fieldName] + "\n"
         return returnStr
     
+    
+    def _promptUserForAnswer(self, functionName, *args) -> str:
+        functionNamesDict = {
+            'promptUsername': "\nEnter new username\n"\
+                              "->",
+            
+            'promptPhoneNumber': "\nEnter phone number (no dashes or spaces)\n" \
+                                 "->",
+            
+            'promptPhoneCarrier': "\nChoose from supported phone carriers: \n" \
+                                  + self._supportedCarriersPrintString() + \
+                                  "->",
+                                  
+            'editUserInfo': "\nEnter username to edit\n" \
+                            "Enter 'ls' to see all users\n" \
+                            "Enter 'q' to quit\n" \
+                            "->"
+            }
+        if functionName == 'userInfoChangeField':
+            functionNamesDict[functionName] = "\nChange one of the fields below by entering '[field name] : [new info]'\n" \
+                                              + self._userInfoPrintString(args[0]) + \
+                                              "'q' to quit\n"\
+                                              "->"
+        printStatement = functionNamesDict[functionName]
+        userAnswer = input(printStatement)
+        return userAnswer
     
         
