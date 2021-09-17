@@ -33,7 +33,7 @@ class echoChamberClient(Connection):
     def processCommands(self, userInput: str) -> None:
         command, *args = userInput.split(' ')
         if command == "send":
-            self._requestServerSendFile(userInput, args)
+            self._requestServerSendFile(userInput)
         elif command == "sendSMS":
             self._sendData(command)
             checkError = self._recvData().decode()
@@ -70,22 +70,23 @@ class echoChamberClient(Connection):
             self._closeConnection()      
 
 
-    def _requestServerSendFile(self, userInput: str, *args) -> None:
+    def _requestServerSendFile(self, userInput: str) -> None:
             self._sendData(userInput)
             serverResponse = self._recvData()
+            temp, *args = userInput.split(' ')
             fileName = args[0]
             if serverResponse == "File not found":
                 print(f"ERROR: File '{fileName}' does not exist\n")
             else:
-                self._receiveFileFromServer(self, args)
+                self._receiveFileFromServer(args)
                 
     
-    def _receiveFileFromServer(self, *args) -> None:
+    def _receiveFileFromServer(self, possibleFileNames: list) -> None:
         fileName = None
-        if len(args) == 1:
-            fileName = args[0]
-        elif len(args) == 2: #length of 2 means that the third optional field of the 'send' command is filled
-            fileName = args[1]
+        if len(possibleFileNames) == 1:
+            fileName = possibleFileNames[0]
+        elif len(possibleFileNames) == 2: #length of 2 means that the third optional field of the 'send' command is filled
+            fileName = possibleFileNames[1]
         self._sendData("Ready to receive file")
         with open(fileName, 'wb') as receivedFile:
             dataFromServer = self._recvData()
@@ -103,10 +104,6 @@ class echoChamberClient(Connection):
         self._sendData(userInput)
         fileInfo = self._recvData()
         print(fileInfo.decode('ascii'))
-        # for file in os.listdir():
-        #     print(file)
-        # print('\n')
-
 
 
     
