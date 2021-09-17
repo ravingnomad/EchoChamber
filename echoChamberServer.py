@@ -6,6 +6,7 @@ from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from connection import *
+from pickle import NONE
 
 class echoChamberServer(Connection):
 
@@ -24,6 +25,7 @@ class echoChamberServer(Connection):
     
 
     def waitForClient(self) -> None:
+        print("\nWaiting to connect with client...\n")
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.bind((self.name, self.port))
             s.listen()
@@ -41,7 +43,7 @@ class echoChamberServer(Connection):
         data = self._recvData()
         command, *args = data.decode().split(" ")
         if command == "send":
-            self._sendFile(args[0])
+            self._sendFileToClient(args[0])
         elif command == "sendSMS":
             recipient = args[0]
             fileName = args[1]
@@ -54,18 +56,39 @@ class echoChamberServer(Connection):
                     print("\nClient found error(s) when trying to open file. Stopping command execution\n")
         elif command == "SMSLog":
             self._sendSMSInfo()
+        elif command == "ls":
+            self._sendFileInfo()
         elif command == "q":
             self.endConn = True
 
     
-    def _sendFile(self, fileName: str) -> None:
-        print("\nClient wants to send a file\n")
-        noErrors = self._recvData().decode()
-        if (noErrors == "File Exists"):
-            self._copyFile(fileName)
-        elif (noErrors == "Error found"):
-            print("\nClient found error(s) when trying to open file. Stopping command execution\n")
-
+    def _sendFileToClient(self, fileName: str) -> None:
+        print(f"\nClient wants file '{fileName}'\n")
+        try:
+            with open(fileName, 'rb') as file:
+                self._sendData("File found")
+                fileBuffer = file.read()
+                clientResponse = self._recvData()
+                if clientResponse == "Ready to receive file":
+                    self._sendData(fileBuffer)
+        except FileNotFoundError:
+            print("ERROR: File {} does not exist.\n".format(fileName))
+            self._sendData("File not found")
+            
+    # def _sendFile(self, fileName):
+    #     """Sends a file over to the server to be saved. Will print a message once it is
+    #     done sending the file."""
+    #     try:
+    #         with open(fileName, 'rb') as file:
+    #             self._sendData("File Exists")
+    #             buffer = file.read()
+    #             readyToSend = self._recvData()
+    #             if readyToSend.decode() == "Ready to receive file.":
+    #                 print("Sending File to Server\n")
+    #                 self._sendData(buffer)
+    #     except FileNotFoundError:
+    #         print("ERROR: File {} does not exist.\n".format(fileName))
+    #         self._sendData("Error found")
 
     def _smsRecipientValid(self, recipientName: str) -> bool:
         print("\nClient wants to text a file to a valid recipient\n")
@@ -79,10 +102,10 @@ class echoChamberServer(Connection):
             
             
     def _sendSMSInfo(self):
-        print("\nClient wants to see information about SMS contacts\n")
-        log = None
-        with open("SMSLog.txt", 'r', encoding = 'latin-1') as file:
-            log = file.read()
+        log = ""
+        for user in self.validUsers.keys():
+            log += user
+            log += "\n"
         self._sendData(log)
 
 
@@ -185,7 +208,6 @@ class echoChamberServer(Connection):
 
 
     def _copyFile(self, fileName):
-        """Copies the client's specified file onto the computer"""
         with open(fileName, 'wb') as file:
             self._sendData("Ready to receive file.")
             data = self._recvData()
@@ -202,46 +224,69 @@ class echoChamberServer(Connection):
         return False
 
 
-    def _displayFiles(self, command):
-        '''Displays files, one file per line. Includes sizes of files in megabytes if optional command included, rounded to two decimal places.'''
-        if len(command) == 2:
-            for file in os.listdir():
-                statinfo = os.stat(file)
-                size = statinfo.st_size / 1000000
-                print(file + '\t' + str(round((size), 2)) + " MB")
-            print('\n')
-            
-        else:
-            for file in os.listdir():
-                print(file)
-            print('\n')
+    def _sendFileInfo(self):
+        fileInfo = ""
+        for fileName in os.listdir():
+            statinfo = os.stat(fileName)
+            size = statinfo.st_size / 1000000
+            fileInfo += fileName + '\t' + str(round((size), 2)) + " MB\n"
+        self._sendData(fileInfo)
 
 
-    def _fileExists(self, fileName):
-        '''Check if file exists in the immediate directory'''
+    def _fileExists(self, fileName) -> bool:
         return fileName in os.listdir()
-    
-    
-    def _fileCorrectType(self, fileName):
-        '''text, PNG, IMG, GIF, and WEBM'''
-        extension = fileName.split('.')[1]
-        return extension in self.supportedTypes
 
 
-    def _sendFile(self, fileName):
-        """Sends a file over to the server to be saved. Will print a message once it is
-        done sending the file."""
-        try:
-            with open(fileName, 'rb') as file:
-                self._sendData("File Exists")
-                buffer = file.read()
-                readyToSend = self._recvData()
-                if readyToSend.decode() == "Ready to receive file.":
-                    print("Sending File to Server\n")
-                    self._sendData(buffer)
-        except FileNotFoundError:
-            print("ERROR: File {} does not exist.\n".format(fileName))
-            self._sendData("Error found")
+
 
                 
-
+# def _commandHasErrors(self, command) -> bool:
+#         """Takes a command, split by its white spaces, and sees if it is formatted correctly. If it is,
+#         return 'False' as in there are no errors. Otherwise, return 'True'
+#         as in there is an error."""
+#         if command[0] not in self.commands:
+#             print("ERROR: Command '{}' does not exist. Type 'help' to see available commands.\n".format(command[0]))
+#             return True
+#
+#         check = command[0]
+#         if check == "send":
+#             if len(command) < 2 or len(command) > 3:
+#                 print("ERROR: 'send' command incorrectly formatted. Type 'help' to see correct format.\n")
+#                 return True
+#             elif self._fileExists(command[1]) == False:
+#                 print("ERROR: The file '{}' does not exist. Type 'ls' to see list of available files in directory.\n".format(command[1]))
+#                 return True
+#
+#         elif check == "sendSMS":
+#             if len(command) < 3 or len(command) > 3:
+#                 print("ERROR: 'sendSMS' command incorrectly formatted. Type 'help' to see correct format.\n")
+#                 return True
+#
+#             elif self._fileExists(command[-1]) == False:
+#                 print("ERROR: The file '{}' does not exist. Type 'ls' to see list of available files in directory.\n".format(command[1]))
+#                 return True
+#
+#             elif self._fileCorrectType(command[-1]) == False:
+#                 extension = command[-1].split('.')[-1]
+#                 print("ERROR: Cannot send files of type '{}'. Type 'help' to see supported file types.\n".format(extension))
+#                 return True
+#
+#         elif check == "ls":
+#             if len(command) > 2 or (len(command) == 2 and command[1] != '-s'):
+#                 print("ERROR: 'ls' command incorrectly formatted. Type 'help' to see correct format.\n")
+#                 return True
+#
+#         elif check == "SMSLog":
+#             if len(command) > 1:
+#                 print("ERROR: 'SMSLog' command incorrectly formatted. Type 'help' to see correct format.\n")
+#                 return True
+#
+#         elif check == "help" and len(command) > 1:
+#             print("ERROR: 'help' command incorrectly formatted. Type 'help' to see correct format.\n")
+#             return True
+#
+#         elif check == "q" and len(command) > 1:
+#             print("ERROR: 'q' command incorrectly formatted. Type 'help' to see correct format.\n")
+#             return True
+#
+#         return False

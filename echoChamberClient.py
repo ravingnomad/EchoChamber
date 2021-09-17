@@ -33,11 +33,10 @@ class echoChamberClient(Connection):
             self._processCommands(message)
 
     
-    def _processCommands(self, userInput: str) -> None:
+    def processCommands(self, userInput: str) -> None:
         command, *args = userInput.split(' ')
-        if command == 'q':
-            self._sendData('q')
-            self.abort = True
+        if command == "send":
+            self._requestServerSendFile(userInput, args)
         elif command == "sendSMS":
             self._sendData(command)
             checkError = self._recvData().decode()
@@ -48,44 +47,64 @@ class echoChamberClient(Connection):
                 print(serverMsg + '\n')
             else:
                 print(checkError + '\n')
-        
-        elif command == "send":
-            fileName = check[1]
-            self._sendData(command)
-            self._sendFile(fileName)
-
         elif command == "SMSLog":
-            '''Get message from server detailing the logged sms info'''
-            self._sendData(command)
-            self._requestSMSLog()
-            
+            self._requestSMSLog(userInput)
         elif command == "ls":
-            self._displayFiles()
-
+            self._requestDisplayFiles(userInput)
         elif command == "help":
             print("Commands:\n")
-            print("\t\"send\" [file name with extension] [optional: new file name]:  makes a copy of specified file and sends it to receiving server. Will save file on server-side with new name if specified.\n")
-            print("\t\"sendSMS\" [name of recipient] [file name with extension]: sends a file and recipient name to the server so that file can be converted to email and texted to recipient's phone. Limited to text, PNG, IMG, GIF, and WEBM files.\n")
-            print("\t\"SMSLog\": receive information from server describing what phone contacts are available for use along with a small description of who\what they are\n")
-            print("\t\"ls\" : lists the files that are currently in the directory.\n\n")
-            print("\t\"q\": terminates connection with server-side. In current condition, also shuts down server.\n")        
+            print("\t\"send\" [file name with extension] [optional: new file name with extension]:  "\
+                  "requests a file from server with specified file name. Server will send it, and client will save it "\
+                  "with new name if specified. Otherwise, saves it as specified file name.\n")
+            
+            print("\t\"sendSMS\" [name of recipient] [file name with extension]: "\
+                  "requests a specified file from the server to be sent to the recipient's phone via SMS. "\
+                  "Limited to TXT, PNG, IMG, GIF, WEBM, and MP4 files.\n")
+            
+            print("\t\"SMSLog\": "\
+                  "receive usernames from server of what phone contacts are available for use.\n")
+            
+            print("\t\"ls\" : "\
+                  "lists the files that are currently in the directory.\n")
+            
+            print("\t\"q\": "\
+                  "terminates connection with server and shuts down server.\n\n")
+        if command == 'q':
+            self._sendData('q')
+            self.abort = True       
 
+
+    def _requestServerSendFile(self, userInput: str, *args) -> None:
+            self._sendData(userInput)
+            serverResponse = self._recvData()
+            fileName = args[0]
+            if serverResponse == "File not found":
+                print(f"ERROR: File '{fileName}' does not exist\n")
+            else:
+                self._receiveFileFromServer(self, args)
+                
     
+    def _receiveFileFromServer(self, *args) -> None:
+        fileName = None
+        if len(args) == 1:
+            fileName = args[0]
+        elif len(args) == 2: #length of 2 means that the third optional field of the 'send' command is filled
+            fileName = args[1]
+        self.sendData("Ready to receive file")
+        with open(fileName, 'wb') as receivedFile:
+            dataFromServer = self._recvData()
+            receivedFile.write(dataFromServer)
+        print(f"Saved file received from server as '{fileName}'\n")
+        
     
-    
-    def _requestSMSLog(self):
-        """Requests a text log from the server that details the phone/contact info
-        of individuals that server has stored in order to send text messages. Does not
-        reveal info about individual's carrier nor phone number"""
+    def _requestSMSLog(self, userInput: str) -> None:
+        self._sendData(userInput)
         info = self._recvData()
-        info = info.decode("ascii").split("\n\n")
-        for line in info:
-            if line != "END":
-                print(line)
-        print('\n')
+        print(info)
 
 
-    def _displayFiles(self):
+    def _requestDisplayFiles(self, userInput: str) -> None:
+        self._sendData(userInput)
         for file in os.listdir():
             print(file)
         print('\n')
