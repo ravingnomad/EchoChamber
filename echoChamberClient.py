@@ -12,7 +12,6 @@ class echoChamberClient(Connection):
         self.port = port
         self.commands = ['send', 'sendSMS', 'SMSLog', 'help', 'ls', 'q']
         self.supportedTypes = ["png", "PNG", "GIF", "gif", "TXT", "txt", "WEBM", "webm", "MP4", "mp4"]
-        self.abort = False
 
 
     def connectToServer(self) -> None:
@@ -24,8 +23,9 @@ class echoChamberClient(Connection):
             print(e)
             print("ERROR: Could not establish connection.\n")
         
-                
-    def closeConnection(self) -> None:
+    
+    def _closeConnection(self) -> None:
+        self._sendData('q')
         self.socket.close()
         print("Closed client connection\n")
     
@@ -67,8 +67,7 @@ class echoChamberClient(Connection):
             print("\t\"q\": "\
                   "terminates connection with server and shuts down server.\n\n")
         if command == 'q':
-            self._sendData('q')
-            self.abort = True       
+            self._closeConnection()      
 
 
     def _requestServerSendFile(self, userInput: str, *args) -> None:
@@ -87,7 +86,7 @@ class echoChamberClient(Connection):
             fileName = args[0]
         elif len(args) == 2: #length of 2 means that the third optional field of the 'send' command is filled
             fileName = args[1]
-        self.sendData("Ready to receive file")
+        self._sendData("Ready to receive file")
         with open(fileName, 'wb') as receivedFile:
             dataFromServer = self._recvData()
             receivedFile.write(dataFromServer)
