@@ -16,22 +16,19 @@ class echoChamberClient(Connection):
 
 
     def connectToServer(self) -> None:
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as self.socket:
-            try:
-                self.socket.connect((self.server, self.port))
-                print("Successfully connected to {}\n".format(self.server))
-                self.mainLoop()
-            except Exception as e:
-                print(e)
-                print("ERROR: Could not establish connection.\n")
+        try:
+            self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.socket.connect((self.server, self.port))
+            print("Successfully connected to {}\n".format(self.server))
+        except Exception as e:
+            print(e)
+            print("ERROR: Could not establish connection.\n")
         
-
-    def start(self) -> None:
-        print("\nEnter a command. Type 'help' for commands and formatting\n")
-        while self.abort == False:
-            message = input("->")
-            self._processCommands(message)
-
+                
+    def closeConnection(self) -> None:
+        self.socket.close()
+        print("Closed client connection\n")
+    
     
     def processCommands(self, userInput: str) -> None:
         command, *args = userInput.split(' ')
@@ -105,9 +102,11 @@ class echoChamberClient(Connection):
 
     def _requestDisplayFiles(self, userInput: str) -> None:
         self._sendData(userInput)
-        for file in os.listdir():
-            print(file)
-        print('\n')
+        fileInfo = self._recvData()
+        print(fileInfo)
+        # for file in os.listdir():
+        #     print(file)
+        # print('\n')
 
 
 
