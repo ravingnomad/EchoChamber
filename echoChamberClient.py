@@ -97,13 +97,13 @@ class echoChamberClient(Connection):
     def _requestSMSLog(self, userInput: str) -> None:
         self._sendData(userInput)
         info = self._recvData()
-        print(info)
+        print(info.decode('ascii'))
 
 
     def _requestDisplayFiles(self, userInput: str) -> None:
         self._sendData(userInput)
         fileInfo = self._recvData()
-        print(fileInfo)
+        print(fileInfo.decode('ascii'))
         # for file in os.listdir():
         #     print(file)
         # print('\n')
