@@ -40,8 +40,8 @@ class echoChamberServer(Connection):
                     
 
     def _waitForCommands(self):
-        data = self._recvData()
-        command, *args = data.decode().split(" ")
+        data = self._recvStrData()
+        command, *args = data.split(" ")
         if command == "send":
             self._sendFileToClient(args[0])
         elif command == "sendSMS":
@@ -68,9 +68,10 @@ class echoChamberServer(Connection):
             with open(fileName, 'rb') as file:
                 self._sendData("File found")
                 fileBuffer = file.read()
-                clientResponse = self._recvData()
+                clientResponse = self._recvStrData()
                 if clientResponse == "Ready to receive file":
                     self._sendData(fileBuffer)
+            print(f"Successfully sent '{fileName}' to client\n")
         except FileNotFoundError:
             print("ERROR: File {} does not exist.\n".format(fileName))
             self._sendData("File not found")

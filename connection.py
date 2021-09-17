@@ -33,3 +33,8 @@ class Connection:
         self.socket.sendall("Got the size".encode())
         info = self._recvAll(bufferSize)
         return info
+    
+    
+    def _recvStrData(self) -> str:
+        info = self._recvData()
+        return info.decode('ascii')
