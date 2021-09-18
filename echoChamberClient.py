@@ -64,13 +64,9 @@ class echoChamberClient(Connection):
 
     def _requestServerSendFile(self, userInput: str) -> None:
             self._sendData(userInput)
-            serverResponse = self._recvStrData()
-            unused, *args = userInput.split(' ')
-            fileName = args[0]
-            if serverResponse == "File not found":
-                print(f"ERROR: File '{fileName}' does not exist\n")
-            else:
-                self._receiveFileFromServer(args)
+            if self._fileExistsOnServer(userInput) == True:
+                unused, *fileNames = userInput.split(' ')
+                self._receiveFileFromServer(fileNames)
                 
     
     def _receiveFileFromServer(self, possibleFileNames: list) -> None:
@@ -88,13 +84,8 @@ class echoChamberClient(Connection):
         
     def _requestServerSendSMSFile(self, userInput: str) -> None:
         self._sendData(userInput)
-        serverResponse = self._recvStrData()
-        unused, *args = userInput.split(' ')
-        fileName = args[0]
-        if serverResponse == "File not found":
-            print(f"ERROR: File '{fileName}' does not exist\n")
-        else:
-            print(serverResponse)
+        if self._fileExistsOnServer(userInput) == True:
+            print("Server sending file to recipient by SMS...\n")
         # checkError = self._recvData().decode()
         # if checkError == "Recipient Found":
         #     fileName = check[-1]
@@ -103,7 +94,17 @@ class echoChamberClient(Connection):
         #     print(serverMsg + '\n')
         # else:
         #     print(checkError + '\n')
+   
         
+    def _fileExistsOnServer(self, userInput: str) -> bool:
+        serverResponse = self._recvStrData()
+        unused, *args = userInput.split(' ')
+        fileName = args[0]
+        if serverResponse == "File not found":
+            print(f"ERROR: File '{fileName}' does not exist\n")
+            return False
+        return True
+    
     
     def _requestSMSLog(self, userInput: str) -> None:
         self._sendData(userInput)
