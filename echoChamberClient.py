@@ -46,7 +46,7 @@ class echoChamberClient(Connection):
                   "requests a file from server with specified file name. Server will send it, and client will save it "\
                   "with new name if specified. Otherwise, saves it as specified file name.\n")
             
-            print("\t\"sendSMS\" [name of recipient] [file name with extension]: "\
+            print("\t\"sendSMS\" [file name with extension] [name of recipient]: "\
                   "requests a specified file from the server to be sent to the recipient's phone via SMS. "\
                   "Limited to TXT, PNG, IMG, GIF, WEBM, and MP4 files.\n")
             
@@ -84,7 +84,7 @@ class echoChamberClient(Connection):
         
     def _requestServerSendSMSFile(self, userInput: str) -> None:
         self._sendData(userInput)
-        if self._fileExistsOnServer(userInput) == True:
+        if self._fileExistsOnServer(userInput) == True and self._recipientExists(userInput) == True:
             print("Server sending file to recipient by SMS...\n")
         # checkError = self._recvData().decode()
         # if checkError == "Recipient Found":
@@ -95,7 +95,17 @@ class echoChamberClient(Connection):
         # else:
         #     print(checkError + '\n')
    
-        
+    
+    def _recipientExists(self, userInput: str) -> bool:
+        serverResponse = self._recvStrData()
+        unused, *args = userInput.split(' ')
+        recipientName = args[1]
+        if serverResponse == "Recipient not found":
+            print(f"ERROR: User '{recipientName}' does not exist\n")
+            return False
+        return True
+    
+    
     def _fileExistsOnServer(self, userInput: str) -> bool:
         serverResponse = self._recvStrData()
         unused, *args = userInput.split(' ')
