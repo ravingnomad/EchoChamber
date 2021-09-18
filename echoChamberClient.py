@@ -27,7 +27,7 @@ class echoChamberClient(Connection):
     def _closeConnection(self) -> None:
         self._sendData('q')
         self.socket.close()
-        print("Closed client connection\n")
+        print("Closed connection with server\n")
     
     
     def processCommands(self, userInput: str) -> None:
@@ -35,15 +35,7 @@ class echoChamberClient(Connection):
         if command == "send":
             self._requestServerSendFile(userInput)
         elif command == "sendSMS":
-            self._sendData(command)
-            checkError = self._recvData().decode()
-            if checkError == "Recipient Found":
-                fileName = check[-1]
-                self._sendFile(fileName)
-                serverMsg = self._recvData().decode()
-                print(serverMsg + '\n')
-            else:
-                print(checkError + '\n')
+            self._requestServerSendSMSFile(userInput)
         elif command == "SMSLog":
             self._requestSMSLog(userInput)
         elif command == "ls":
@@ -92,6 +84,25 @@ class echoChamberClient(Connection):
             dataFromServer = self._recvData()
             receivedFile.write(dataFromServer)
         print(f"Saved file received from server as '{fileName}'\n")
+        
+        
+    def _requestServerSendSMSFile(self, userInput: str) -> None:
+        self._sendData(userInput)
+        serverResponse = self._recvStrData()
+        unused, *args = userInput.split(' ')
+        fileName = args[0]
+        if serverResponse == "File not found":
+            print(f"ERROR: File '{fileName}' does not exist\n")
+        else:
+            print(serverResponse)
+        # checkError = self._recvData().decode()
+        # if checkError == "Recipient Found":
+        #     fileName = check[-1]
+        #     self._sendFile(fileName)
+        #     serverMsg = self._recvData().decode()
+        #     print(serverMsg + '\n')
+        # else:
+        #     print(checkError + '\n')
         
     
     def _requestSMSLog(self, userInput: str) -> None:
