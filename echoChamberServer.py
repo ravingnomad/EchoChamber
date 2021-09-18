@@ -37,24 +37,25 @@ class echoChamberServer(Connection):
         with self.socket:
             while self.endConnection == False:
                 self._waitForCommands()
-        print("Ended connection with client\n")
+        print("Closed connection with client\n")
                     
 
     def _waitForCommands(self):
-        data = self._recvStrData()
-        command, *args = data.split(" ")
+        userInput = self._recvStrData()
+        command, *args = userInput.split(" ")
         if command == "send":
             self._sendFileToClient(args[0])
         elif command == "sendSMS":
-            recipient = args[0]
-            fileName = args[1]
-            if self._smsRecipientValid(recipient) == True:
-                noErrors = self._recvData().decode()
-                if (noErrors == "File Exists"):
-                    self._copyFile(fileName)
-                    self._textFile(recipient, fileName)
-                elif (noErrors == "Error found"):
-                    print("\nClient found error(s) when trying to open file. Stopping command execution\n")
+            self._sendSMSFile(args)
+            # recipient = args[0]
+            # fileName = args[1]
+            # if self._smsRecipientValid(recipient) == True:
+            #     noErrors = self._recvData().decode()
+            #     if (noErrors == "File Exists"):
+            #         self._copyFile(fileName)
+            #         self._textFile(recipient, fileName)
+            #     elif (noErrors == "Error found"):
+            #         print("\nClient found error(s) when trying to open file. Stopping command execution\n")
         elif command == "SMSLog":
             self._sendSMSInfo()
         elif command == "ls":
@@ -65,7 +66,7 @@ class echoChamberServer(Connection):
     
     def _sendFileToClient(self, fileName: str) -> None:
         print(f"\nClient wants file '{fileName}'\n")
-        try:
+        if self._fileExists(fileName) == True:
             with open(fileName, 'rb') as file:
                 self._sendData("File found")
                 fileBuffer = file.read()
@@ -73,34 +74,34 @@ class echoChamberServer(Connection):
                 if clientResponse == "Ready to receive file":
                     self._sendData(fileBuffer)
             print(f"Successfully sent '{fileName}' to client\n")
-        except FileNotFoundError:
+        else:
             print("ERROR: File {} does not exist.\n".format(fileName))
             self._sendData("File not found")
             
-    # def _sendFile(self, fileName):
-    #     """Sends a file over to the server to be saved. Will print a message once it is
-    #     done sending the file."""
-    #     try:
-    #         with open(fileName, 'rb') as file:
-    #             self._sendData("File Exists")
-    #             buffer = file.read()
-    #             readyToSend = self._recvData()
-    #             if readyToSend.decode() == "Ready to receive file.":
-    #                 print("Sending File to Server\n")
-    #                 self._sendData(buffer)
-    #     except FileNotFoundError:
-    #         print("ERROR: File {} does not exist.\n".format(fileName))
-    #         self._sendData("Error found")
 
-    def _smsRecipientValid(self, recipientName: str) -> bool:
+    def _sendSMSFile(self, commandArgs: list) -> None:
         print("\nClient wants to text a file to a valid recipient\n")
-        if recipientName not in self.validUsers.keys():
-            print("ERROR: recipient not valid\n")
-            self._sendData("ERROR: not a valid recipient.")
-            return False
+        fileName, recipientName = commandArgs
+        if self._fileExists(fileName) == True:
+            self._sendData("File found")
+            if self._smsRecipientValid(recipientName) == True:
+                self._sendData("Recipient found")
+                self._textFile(recipientName, fileName)
+                print("Sent SMS to recipient successfully\n")
+            else:
+                print("ERROR: recipient not valid\n")
+                self._sendData("Recipient not found")
         else:
-            self._sendData("Recipient Found")
-            return True
+            print("ERROR: file does not exist\n")
+            self._sendData("File not found") 
+            
+    
+    def _fileExists(self, fileName) -> bool:
+        return fileName in os.listdir()
+        
+        
+    def _smsRecipientValid(self, recipientName: str) -> bool:
+        return recipientName in self.validUsers.keys()
             
             
     def _sendSMSInfo(self):
@@ -134,7 +135,7 @@ class echoChamberServer(Connection):
                 compressed = True
             else:
                 clientMsg = 'WARNING: File larger than 1.8MB and does not support compression. Highly probable that file will not reach recipient.'
-        self._sendData(clientMsg)
+        #self._sendData(clientMsg)
         
         if compressed == True:
             with open('output.{}'.format(extension), 'rb') as file:
@@ -221,9 +222,7 @@ class echoChamberServer(Connection):
     def _fileTooBig(self, fileName):
         fileStats = os.stat(fileName)
         size = fileStats.st_size
-        if size >= 1800000:
-            return True
-        return False
+        return size >= 1800000
 
 
     def _sendFileInfo(self):
@@ -235,8 +234,7 @@ class echoChamberServer(Connection):
         self._sendData(fileInfo)
 
 
-    def _fileExists(self, fileName) -> bool:
-        return fileName in os.listdir()
+
 
 
 
