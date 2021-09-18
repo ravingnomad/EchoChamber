@@ -72,8 +72,8 @@ class echoChamberClient(Connection):
 
     def _requestServerSendFile(self, userInput: str) -> None:
             self._sendData(userInput)
-            serverResponse = self._recvData()
-            temp, *args = userInput.split(' ')
+            serverResponse = self._recvStrData()
+            unused, *args = userInput.split(' ')
             fileName = args[0]
             if serverResponse == "File not found":
                 print(f"ERROR: File '{fileName}' does not exist\n")
@@ -96,14 +96,14 @@ class echoChamberClient(Connection):
     
     def _requestSMSLog(self, userInput: str) -> None:
         self._sendData(userInput)
-        info = self._recvData()
-        print(info.decode('ascii'))
+        info = self._recvStrData()
+        print(info)
 
 
     def _requestDisplayFiles(self, userInput: str) -> None:
         self._sendData(userInput)
-        fileInfo = self._recvData()
-        print(fileInfo.decode('ascii'))
+        fileInfo = self._recvStrData()
+        print(fileInfo)
 
 
     

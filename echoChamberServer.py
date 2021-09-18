@@ -37,6 +37,7 @@ class echoChamberServer(Connection):
         with self.socket:
             while self.endConnection == False:
                 self._waitForCommands()
+        print("Ended connection with client\n")
                     
 
     def _waitForCommands(self):
@@ -59,7 +60,7 @@ class echoChamberServer(Connection):
         elif command == "ls":
             self._sendFileInfo()
         elif command == "q":
-            self.endConn = True
+            self.endConnection = True
 
     
     def _sendFileToClient(self, fileName: str) -> None:
