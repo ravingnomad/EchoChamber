@@ -86,6 +86,8 @@ class echoChamberClient(Connection):
         self._sendData(userInput)
         if self._fileExistsOnServer(userInput) == True and self._recipientExists(userInput) == True:
             print("Server sending file to recipient by SMS...\n")
+            serverDoneSending = self._recvStrData() #stops client from entering anything else while server sends SMS
+            print(serverDoneSending)
    
     
     def _recipientExists(self, userInput: str) -> bool:

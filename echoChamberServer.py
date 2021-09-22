@@ -58,8 +58,8 @@ class echoChamberServer(Connection):
     def _sendFileToClient(self, fileName: str) -> None:
         print(f"\nClient wants file '{fileName}'\n")
         if self._fileExists(fileName) == True:
+            self._sendData("File found")
             with open(fileName, 'rb') as file:
-                self._sendData("File found")
                 fileBuffer = file.read()
                 clientResponse = self._recvStrData()
                 if clientResponse == "Ready to receive file":
@@ -79,6 +79,7 @@ class echoChamberServer(Connection):
                 self._sendData("Recipient found")
                 self._textFile(recipientName, fileName)
                 print("Sent SMS to recipient successfully\n")
+                self._sendData("Sent SMS to recipient successfully\n") #unpauses user
             else:
                 print("ERROR: recipient not valid\n")
                 self._sendData("Recipient not found")
