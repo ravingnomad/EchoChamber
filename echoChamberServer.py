@@ -104,58 +104,11 @@ class echoChamberServer(Connection):
         arise if another compression occurs and saves with the same file name as the compressed file."""
         
         fileData = self._smsReadDataFromFile(fileName) 
-        # compressed = False
-        fileExtension = fileName.split('.')[-1].lower()
-        #
-
-        # if self._fileTooBig(fileName):
-        #     if fileExtension in ('webm', 'mp4'):
-        #         self._compress(fileName, fileExtension)
-        #         compressed = True
-        #
-        # if compressed == True:
-        #     with open(f'output.{fileExtension}', 'rb') as compressedFile:
-        #         fileData = compressedFile.read()
-        #     os.remove(f'output.{fileExtension}')
-        #
-        # else:
-        #     with open(fileName, 'rb') as file:
-        #         fileData = file.read()
-   
-        msg = MIMEMultipart()
-        if fileExtension in ('webm', 'mp4'):
-            data = MIMEBase('video', 'mp4')
-            data.set_payload(fileData)
-            encoders.encode_base64(data)
-            data.add_header('Content-Disposition', 'attachment', filename = fileName)
-            msg.attach(data)
-            msg['Subject'] = 'subject'
-            msg['From'] = 'us'
-            msg['To'] = 'us'
-            text = MIMEText("test")
-            msg.attach(text)
-
-        elif fileExtension == 'txt':
-            msg['Subject'] = 'subject'
-            msg['From'] = 'us'
-            msg['To'] = 'us'
-            text = MIMEText(fileData, _charset = "UTF-8")
-            msg.attach(text)
-
-        else:
-            msg['Subject'] = 'subject'
-            msg['From'] = 'us'
-            msg['To'] = 'us'
-            text = MIMEText("test")
-            msg.attach(text)
-            image = MIMEImage(fileData)
-            msg.attach(image)
-            
-            
+        mimeMsg = self._createMIME(fileData, fileName)
         server = smtplib.SMTP("smtp.gmail.com", 587, None, 30)
         server.starttls()
         server.login(self.validUsers[recipient]['Email Address'], self.validUsers[recipient]['Email Password'])
-        server.sendmail('computer', self.validUsers[recipient]['SMS'], msg.as_string())
+        server.sendmail('computer', self.validUsers[recipient]['SMS'], mimeMsg.as_string())
         server.close()
     
     
@@ -171,13 +124,38 @@ class echoChamberServer(Connection):
             with open(fileName, 'rb') as file:
                 fileData = file.read()
         return fileData
+    
+    
+    def _createMIME(self, fileData: byte, fileName: str) -> MIMEMultipart:
+        fileExtension = fileName.split('.')[-1].lower()
+        msg = MIMEMultipart()
+        msg['Subject'] = 'Echo Chamber SMS'
+        msg['From'] = 'Server'
+        msg['To'] = 'Phone'
+        if fileExtension in ('webm', 'mp4'):
+            data = MIMEBase('video', 'mp4')
+            data.set_payload(fileData)
+            encoders.encode_base64(data)
+            data.add_header('Content-Disposition', 'attachment', filename = fileName)
+            msg.attach(data)
+            text = MIMEText("Video File")
+            msg.attach(text)
+        elif fileExtension == 'txt':
+            text = MIMEText(fileData, _charset = "UTF-8")
+            msg.attach(text)
+        else:
+            text = MIMEText("Image File")
+            msg.attach(text)
+            image = MIMEImage(fileData)
+            msg.attach(image)
+        return msg
         
         
     #attempts to compress files > 1.8MB; sizes above this are tricky to send; CURRENT COMPRESSION ONLY SUPPORTS MP4 AND WEBM
     def _compress(self, fileName: str, extension: str) -> None:
         encoder = None
         crf = 0
-        outputFileName = 'output.' + extension
+        outputFileName = 'compressedFile.' + extension
         result = "File compressed. Sending to recipient."
         if extension.lower() == 'mp4':
             crf = 30
