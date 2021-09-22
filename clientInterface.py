@@ -40,7 +40,10 @@ class clientInterface():
         command, *args = userInput.split(' ')
         noFormatError = True
         if command == "send":
-            noFormatError = len(args) in (1, 2)
+            if len(args) == 2:
+                noFormatError = self._sendCommandSameExtension(userInput) #if want to save as new file name, check that extensions match
+            else:
+                noFormatError = len(args) == 1
         elif command == "sendSMS":
             noFormatError = len(args) == 2
         elif command in ("ls", "SMSLog", "help", "q"):
@@ -63,6 +66,14 @@ class clientInterface():
             self._printIncorrectFileTypeError(fileName, extension)
             return False
         return True
+        
+        
+    def _sendCommandSameExtension(self, userInput: str) -> bool:
+        fileNames = userInput.split(' ')[1:] #first element is the user command; ignore it
+        correctExtension = fileNames[0].split('.')[-1]
+        saveFileExtension = fileNames[1].split('.')[-1]
+        return correctExtension == saveFileExtension
+        
         
     
     def _printCommandNotExistError(self, command: str) -> None:

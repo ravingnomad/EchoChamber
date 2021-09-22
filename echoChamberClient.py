@@ -42,7 +42,7 @@ class echoChamberClient(Connection):
             self._requestDisplayFiles(userInput)
         elif command == "help":
             print("Commands:\n")
-            print("\t\"send\" [file name with extension] [optional: new file name with extension]:  "\
+            print("\t\"send\" [file name with extension] [optional: new file name with same extension as requested file]:  "\
                   "requests a file from server with specified file name. Server will send it, and client will save it "\
                   "with new name if specified. Otherwise, saves it as specified file name.\n")
             
