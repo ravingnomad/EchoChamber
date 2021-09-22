@@ -1,3 +1,4 @@
+from pickle import NONE
 
 
 class clientInterface():
@@ -6,6 +7,7 @@ class clientInterface():
         self.serverAddress = ""
         self.userRecentCommand = ""
         self.validCommands = ['send', 'sendSMS', 'SMSLog', 'help', 'ls', 'q']
+        self.smsSupportedFileTypes = ["jpg", "img", "png", "gif", "txt", "webm", "mp4"]
 
         
     def promptServerAddress(self) -> None:
@@ -27,7 +29,7 @@ class clientInterface():
         userInput = input("\nPlease enter a command for the client\n" \
                         "Enter 'help' for commands and formatting\n" \
                         "->")
-        while self._commandCorrectlyFormatted(userInput) == False:
+        while self._commandCorrectlyFormatted(userInput) == False or self._isSupportedSMSFileType(userInput) == False:
             userInput = input("\nPlease enter a command for the client\n" \
                         "Enter 'help' for commands and formatting\n" \
                         "->")
@@ -51,9 +53,25 @@ class clientInterface():
         return noFormatError
     
     
+    def _isSupportedSMSFileType(self, userInput: str) -> bool:
+        splitCommand = userInput.split(' ')
+        if splitCommand[0] != 'sendSMS': #only sendSMS command needs to check for file type
+            return True
+        fileName = splitCommand[1]
+        extension = fileName.split('.')[-1].lower()
+        if extension not in self.smsSupportedFileTypes:
+            self._printIncorrectFileTypeError(fileName, extension)
+            return False
+        return True
+        
+    
     def _printCommandNotExistError(self, command: str) -> None:
         print(f"ERROR: Command '{command}' does not exist. Type 'help' to see available commands \n")
     
     
     def _printIncorrectlyFormattedError(self, command: str) -> None:
         print(f"ERROR: '{command}' incorrectly formatted. Type 'help' to see correct format \n")
+        
+        
+    def _printIncorrectFileTypeError(self, fileName: str, fileExtension: str) -> None:
+        print(f"ERROR: File '{fileName}' with extension '{fileExtension}' is not a supported file type for use with SMS \n")

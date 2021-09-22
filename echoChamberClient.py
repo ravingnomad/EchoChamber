@@ -11,7 +11,7 @@ class echoChamberClient(Connection):
         self.server = serverName
         self.port = port
         self.commands = ['send', 'sendSMS', 'SMSLog', 'help', 'ls', 'q']
-        self.supportedTypes = ["png", "PNG", "GIF", "gif", "TXT", "txt", "WEBM", "webm", "MP4", "mp4"]
+        self.smsSupportedFileTypes = ["jpg", "img", "png", "gif", "txt", "webm", "mp4"]
 
 
     def connectToServer(self) -> None:
@@ -48,13 +48,13 @@ class echoChamberClient(Connection):
             
             print("\t\"sendSMS\" [file name with extension] [name of recipient]: "\
                   "requests a specified file from the server to be sent to the recipient's phone via SMS. "\
-                  "Limited to TXT, PNG, IMG, GIF, WEBM, and MP4 files.\n")
+                  "Limited to TXT, PNG, IMG, GIF, JPG, WEBM, and MP4 files.\n")
             
             print("\t\"SMSLog\": "\
                   "receive usernames from server of what phone contacts are available for use.\n")
             
             print("\t\"ls\" : "\
-                  "lists the files that are currently in the directory.\n")
+                  "lists the files that are currently in the server directory.\n")
             
             print("\t\"q\": "\
                   "terminates connection with server and shuts down server.\n\n")
@@ -86,14 +86,6 @@ class echoChamberClient(Connection):
         self._sendData(userInput)
         if self._fileExistsOnServer(userInput) == True and self._recipientExists(userInput) == True:
             print("Server sending file to recipient by SMS...\n")
-        # checkError = self._recvData().decode()
-        # if checkError == "Recipient Found":
-        #     fileName = check[-1]
-        #     self._sendFile(fileName)
-        #     serverMsg = self._recvData().decode()
-        #     print(serverMsg + '\n')
-        # else:
-        #     print(checkError + '\n')
    
     
     def _recipientExists(self, userInput: str) -> bool:
@@ -114,7 +106,7 @@ class echoChamberClient(Connection):
             print(f"ERROR: File '{fileName}' does not exist\n")
             return False
         return True
-    
+
     
     def _requestSMSLog(self, userInput: str) -> None:
         self._sendData(userInput)
