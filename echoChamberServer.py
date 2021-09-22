@@ -6,7 +6,7 @@ from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from connection import *
-from pickle import NONE
+from test.test_string_literals import byte
 
 class echoChamberServer(Connection):
 
@@ -93,48 +93,35 @@ class echoChamberServer(Connection):
         
     def _smsRecipientValid(self, recipientName: str) -> bool:
         return recipientName in self.validUsers.keys()
-            
-            
-    def _sendSMSInfo(self) -> None:
-        log = ""
-        for user in self.validUsers.keys():
-            log += user
-            log += "\n"
-        self._sendData(log)
 
 
     def _textFile(self, recipient: str, fileName: str) -> None:
-        """Given a valid recipient name, server will send a text message to the recipient that
-        contains the specified file. Since current SMS limits sent file sizes to be around 1.8MB,
-        will check the size of the file and if it is greater than 1.8MB, will attempt to compress
+        """SMS limits sent file sizes to be around 1.8MB, so will check the size of the file and compress
         using FFmpeg. CURRENT COMPRESSION ONLY SUPPORTS MP4 AND WEBM. If file is still too large,
         will still attempt to send the file. There are no guarantees that delivery will be
         successful as entirely dependent on rules imposed by client's mobile plan. After file is sent,
-        if it was compressed, the compressed file will be deleted. If compression used, must delete
-        resulting compressed file after reading its info as errors will arise if another compression
-        occurs and saves with the same file name as the compressed file."""
-
-        fileData = None
-        compressed = False
+        if compression used, must delete resulting compressed file after reading its info as errors will 
+        arise if another compression occurs and saves with the same file name as the compressed file."""
+        
+        fileData = self._smsReadDataFromFile(fileName) 
+        # compressed = False
         fileExtension = fileName.split('.')[-1].lower()
-        
-        if self._fileTooBig(fileName):
-            if fileExtension in ('webm', 'mp4'):
-                self._compress(fileName, fileExtension)
-                compressed = True
-        
-        if compressed == True:
-            with open(f'output.{fileExtension}', 'rb') as compressedFile:
-                fileData = compressedFile.read()
-            os.remove(f'output.{fileExtension}')
+        #
 
-        elif fileData == None and fileExtension != 'txt':
-            with open(fileName, 'rb') as nonTextFile:
-                fileData = nonTextFile.read()
-        else:
-            with open(fileName, 'r', encoding = 'latin-1') as textFile:
-                fileData = textFile.read()
-                
+        # if self._fileTooBig(fileName):
+        #     if fileExtension in ('webm', 'mp4'):
+        #         self._compress(fileName, fileExtension)
+        #         compressed = True
+        #
+        # if compressed == True:
+        #     with open(f'output.{fileExtension}', 'rb') as compressedFile:
+        #         fileData = compressedFile.read()
+        #     os.remove(f'output.{fileExtension}')
+        #
+        # else:
+        #     with open(fileName, 'rb') as file:
+        #         fileData = file.read()
+   
         msg = MIMEMultipart()
         if fileExtension in ('webm', 'mp4'):
             data = MIMEBase('video', 'mp4')
@@ -149,6 +136,9 @@ class echoChamberServer(Connection):
             msg.attach(text)
 
         elif fileExtension == 'txt':
+            msg['Subject'] = 'subject'
+            msg['From'] = 'us'
+            msg['To'] = 'us'
             text = MIMEText(fileData, _charset = "UTF-8")
             msg.attach(text)
 
@@ -167,6 +157,20 @@ class echoChamberServer(Connection):
         server.login(self.validUsers[recipient]['Email Address'], self.validUsers[recipient]['Email Password'])
         server.sendmail('computer', self.validUsers[recipient]['SMS'], msg.as_string())
         server.close()
+    
+    
+    def _smsReadDataFromFile(self, fileName: str) -> byte:
+        fileExtension = fileName.split('.')[-1].lower()
+        fileData = None
+        if self._fileTooBig(fileName) and fileExtension in ('webm', 'mp4'):
+            self._compress(fileName, fileExtension)
+            with open(f'compressedFile.{fileExtension}', 'rb') as compressedFile:
+                fileData = compressedFile.read()
+            os.remove(f'compressedFile.{fileExtension}')
+        else:
+            with open(fileName, 'rb') as file:
+                fileData = file.read()
+        return fileData
         
         
     #attempts to compress files > 1.8MB; sizes above this are tricky to send; CURRENT COMPRESSION ONLY SUPPORTS MP4 AND WEBM
@@ -188,6 +192,14 @@ class echoChamberServer(Connection):
         ff.run()
 
 
+    def _sendSMSInfo(self) -> None:
+        log = ""
+        for user in self.validUsers.keys():
+            log += user
+            log += "\n"
+        self._sendData(log)
+        
+        
     def _copyFile(self, fileName: str) -> None:
         with open(fileName, 'wb') as file:
             self._sendData("Ready to receive file.")
