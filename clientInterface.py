@@ -25,6 +25,16 @@ class clientInterface():
         return temp
     
     
+    def promptCompressQuery(self) -> str:
+        userAnswer = input("\nThe file you want sent is too big. Would you like to compress it? (y/n)\n" \
+                           "->")
+        while userAnswer not in ('y', 'n'):
+            print("ERROR: Incorrect command")
+            userAnswer = input("\nThe file you want sent is too big. Would you like to compress it? (y/n)\n" \
+                   "->")
+        return userAnswer
+    
+    
     def promptCommands(self) -> None:
         userInput = input("\nPlease enter a command for the client\n" \
                         "Enter 'help' for commands and formatting\n" \
@@ -73,7 +83,6 @@ class clientInterface():
         correctExtension = fileNames[0].split('.')[-1]
         saveFileExtension = fileNames[1].split('.')[-1]
         return correctExtension == saveFileExtension
-        
         
     
     def _printCommandNotExistError(self, command: str) -> None:

@@ -18,6 +18,7 @@ class echoChamberServer(Connection):
         self.clientAddr = None
         self.endConnection = False
         self.validUsers = {}
+        self.fileSizeLimit = 1800000
 
 
     def loadUserInfo(self, userInfo: dict) -> None:
@@ -78,8 +79,8 @@ class echoChamberServer(Connection):
             if self._smsRecipientValid(recipientName) == True:
                 self._sendData("Recipient found")
                 self._textFile(recipientName, fileName)
-                print("Sent SMS to recipient successfully\n")
                 self._sendData("Sent SMS to recipient successfully\n") #unpauses user
+                print("Sent SMS to recipient successfully\n")
             else:
                 print("ERROR: recipient not valid\n")
                 self._sendData("Recipient not found")
@@ -103,7 +104,6 @@ class echoChamberServer(Connection):
         successful as entirely dependent on rules imposed by client's mobile plan. After file is sent,
         if compression used, must delete resulting compressed file after reading its info as errors will 
         arise if another compression occurs and saves with the same file name as the compressed file."""
-        
         fileData = self._smsReadDataFromFile(fileName) 
         mimeMsg = self._createMIME(fileData, fileName)
         server = smtplib.SMTP("smtp.gmail.com", 587, None, 30)
@@ -116,15 +116,22 @@ class echoChamberServer(Connection):
     def _smsReadDataFromFile(self, fileName: str) -> byte:
         fileExtension = fileName.split('.')[-1].lower()
         fileData = None
-        if self._fileTooBig(fileName) and fileExtension in ('webm', 'mp4'):
+        if self._fileTooBig(fileName) and fileExtension in ('webm', 'mp4') and self._clientWantsToCompress():
             self._compress(fileName, fileExtension)
             with open(f'compressedFile.{fileExtension}', 'rb') as compressedFile:
                 fileData = compressedFile.read()
             os.remove(f'compressedFile.{fileExtension}')
         else:
+            self._sendData("No compression needed") #client expecting a message asking if they want to compress
             with open(fileName, 'rb') as file:
                 fileData = file.read()
         return fileData
+    
+    
+    def _clientWantsToCompress(self) -> bool:
+        self._sendData("Would you like to compress")
+        clientAnswer = self._recvStrData()
+        return clientAnswer == 'y'
     
     
     def _createMIME(self, fileData: byte, fileName: str) -> MIMEMultipart:
@@ -157,7 +164,6 @@ class echoChamberServer(Connection):
         encoder = None
         crf = 0
         outputFileName = 'compressedFile.' + extension
-        result = "File compressed. Sending to recipient."
         if extension.lower() == 'mp4':
             crf = 30
             encoder = 'libx264'
@@ -191,7 +197,7 @@ class echoChamberServer(Connection):
     def _fileTooBig(self, fileName: str) -> None:
         fileStats = os.stat(fileName)
         size = fileStats.st_size
-        return size >= 1800000
+        return size >= self.fileSizeLimit
 
 
     def _sendFileInfo(self) -> None:
