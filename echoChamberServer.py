@@ -18,7 +18,7 @@ class echoChamberServer(Connection):
         self.clientAddr = None
         self.endConnection = False
         self.validUsers = {}
-        self.fileSizeLimit = 1800000
+        self.fileSizeLimit = 1800000 #1.8 MB
 
 
     def loadUserInfo(self, userInfo: dict) -> None:
@@ -67,7 +67,7 @@ class echoChamberServer(Connection):
                     self._sendData(fileBuffer)
             print(f"Successfully sent '{fileName}' to client\n")
         else:
-            print("ERROR: File {} does not exist.\n".format(fileName))
+            print(f"ERROR: File {fileName} does not exist.\n")
             self._sendData("File not found")
             
 
@@ -122,7 +122,7 @@ class echoChamberServer(Connection):
                 fileData = compressedFile.read()
             os.remove(f'compressedFile.{fileExtension}')
         else:
-            self._sendData("No compression needed") #client expecting a message asking if they want to compress
+            self._sendData("No compression needed") #client expects a message asking if they want to compress
             with open(fileName, 'rb') as file:
                 fileData = file.read()
         return fileData
@@ -183,18 +183,9 @@ class echoChamberServer(Connection):
             log += user
             log += "\n"
         self._sendData(log)
-        
-        
-    def _copyFile(self, fileName: str) -> None:
-        with open(fileName, 'wb') as file:
-            self._sendData("Ready to receive file.")
-            data = self._recvData()
-            print("Receiving File")
-            file.write(data)
-        print("Finished copying file\n")
 
 
-    def _fileTooBig(self, fileName: str) -> None:
+    def _fileTooBig(self, fileName: str) -> bool:
         fileStats = os.stat(fileName)
         size = fileStats.st_size
         return size >= self.fileSizeLimit

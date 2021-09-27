@@ -19,7 +19,6 @@ class clientInterface():
         
         
     def getRecentCommand(self) -> str:
-        #mainly used for echoClient
         temp = self.userRecentCommand
         self.userRecentCommand = "" #reset so subsequent calls don't use old commands
         return temp
@@ -95,3 +94,5 @@ class clientInterface():
         
     def _printIncorrectFileTypeError(self, fileName: str, fileExtension: str) -> None:
         print(f"ERROR: File '{fileName}' with extension '{fileExtension}' is not a supported file type for use with SMS \n")
+        
+        

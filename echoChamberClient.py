@@ -12,11 +12,11 @@ class echoChamberClient(Connection):
         self.port = port
         self.commands = ['send', 'sendSMS', 'SMSLog', 'help', 'ls', 'q']
         self.smsSupportedFileTypes = ["jpg", "img", "png", "gif", "txt", "webm", "mp4"]
-        self.serverCompressQuery = False
+        self.serverAskedToCompress = False
 
 
-    def getCompressQuery(self) -> bool:
-        return self.serverCompressQuery
+    def getServerAskedToCompress(self) -> bool:
+        return self.serverAskedToCompress
     
     
     def connectToServer(self) -> None:
@@ -41,7 +41,6 @@ class echoChamberClient(Connection):
             self._requestServerSendFile(userInput)
         elif command == "sendSMS":
             self._requestServerSendSMSFile(userInput)
-            
         elif command == "SMSLog":
             self._requestSMSLog(userInput)
         elif command == "ls":
@@ -69,10 +68,10 @@ class echoChamberClient(Connection):
 
 
     def _requestServerSendFile(self, userInput: str) -> None:
-            self._sendData(userInput)
-            if self._fileExistsOnServer(userInput) == True:
-                unused, *fileNames = userInput.split(' ')
-                self._receiveFileFromServer(fileNames)
+        self._sendData(userInput)
+        if self._fileExistsOnServer(userInput) == True:
+            unused, *fileNames = userInput.split(' ')
+            self._receiveFileFromServer(fileNames)
                 
     
     def _receiveFileFromServer(self, possibleFileNames: list) -> None:
@@ -92,25 +91,24 @@ class echoChamberClient(Connection):
         self._sendData(userInput)
         if self._fileExistsOnServer(userInput) == True and self._recipientExists(userInput) == True:
             print("Server sending file to recipient by SMS...\n")
-            compressQuery = self._recvStrData() #new problem is that now client will always wait for a server response here even
-            #when sending a file that does not need any compression
+            compressQuery = self._recvStrData()
             if compressQuery == "Would you like to compress":
-                self.serverCompressQuery = True
+                self.serverAskedToCompress = True
             else:
                 self.continueSendingSMS()
 
    
-    def compressQueryAnswer(self, answer: str) -> None:
+    def sendCompressQueryAnswer(self, answer: str) -> None:
        self._sendData(answer)
        
     
     def continueSendingSMS(self) -> None:
-        '''Mainly used to continue sending SMS text after querying client on whether they want to compress the file'''
+        #Mainly used to continue sending SMS text after querying client/user on whether they want to compress the file
         serverDoneSending = self._recvStrData() #stops client from entering anything else while server sends SMS
         while serverDoneSending != "Sent SMS to recipient successfully\n":
             serverDoneSending = self._recvStrData()
         print(serverDoneSending)
-        self.serverCompressQuery = False
+        self.serverAskedToCompress = False
    
    
     def _fileExistsOnServer(self, userInput: str) -> bool:

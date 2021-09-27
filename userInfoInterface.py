@@ -114,25 +114,6 @@ class userInfoInterface():
             return
         else:
             self._editUserInfoChangeField(answer)
-        
-        
-    def _editUserInfoChangeField(self, username: str) -> None:
-        action = self._promptUserForAnswer('userInfoChangeField', username)
-        while action != 'q':
-            if len(action.split(" : ")) == 2:
-                key, value = action.split(" : ")
-                if key in self.userInfo[username].keys():
-                    self.userInfo[username][key] = value
-            else:
-                print("ERROR: Incorrect response\n")
-            action = self._promptUserForAnswer('userInfoChangeField', username)
-        
-        
-    def _userInfoPrintString(self, username: str) -> str:
-        returnStr = ""
-        for fieldName in self.userInfo[username].keys():
-            returnStr += str(fieldName) + " : " + self.userInfo[username][fieldName] + "\n"
-        return returnStr
             
     
     def _promptUserForAnswer(self, functionName, *args) -> str:
@@ -152,6 +133,8 @@ class userInfoInterface():
                             "Enter 'q' to quit\n" \
                             "->"
             }
+        #assigns this print statement to functionNamesDict['userInfoChangeField' at runtime because self._userInfoPrintString()
+        #does not know what 'args' is at compile time
         if functionName == 'userInfoChangeField':
             functionNamesDict[functionName] = "\nChange one of the fields below by entering '[field name] : [new info]'\n" \
                                               + self._userInfoPrintString(args[0]) + \
@@ -160,5 +143,24 @@ class userInfoInterface():
         printStatement = functionNamesDict[functionName]
         userAnswer = input(printStatement)
         return userAnswer
+        
+        
+    def _editUserInfoChangeField(self, username: str) -> None:
+        action = self._promptUserForAnswer('userInfoChangeField', username)
+        while action != 'q':
+            if len(action.split(" : ")) == 2:
+                key, value = action.split(" : ")
+                if key in self.userInfo[username].keys():
+                    self.userInfo[username][key] = value
+            else:
+                print("ERROR: Incorrect response\n")
+            action = self._promptUserForAnswer('userInfoChangeField', username)
+        
+        
+    def _userInfoPrintString(self, username: str) -> str:
+        returnStr = ""
+        for fieldName in self.userInfo[username].keys():
+            returnStr += str(fieldName) + " : " + self.userInfo[username][fieldName] + "\n"
+        return returnStr
     
         
