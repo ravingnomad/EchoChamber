@@ -1,4 +1,3 @@
-import pickle
 from userInfoInterface import *
 from clientInterface import *
 from echoChamberClient import *
