@@ -5,7 +5,7 @@ from echoChamberServer import *
   
   
 def setupServer() -> None:
-    server = echoChamberServer('192.168.1.184', 65000)
+    server = echoChamberServer(serverIPAddress, 65000)
     infoInterface = userInfoInterface()
     infoInterface.loadUserInfo()
     while True:
@@ -30,7 +30,7 @@ def setupServer() -> None:
     
   
 def setupClient() -> None:
-    client = echoChamberClient('192.168.1.184', 65000)
+    client = echoChamberClient(serverIPAddress, 65000)
     interface = clientInterface()
     client.connectToServer()
     while True:
@@ -57,4 +57,5 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    serverIPAddress = ''
     main()
