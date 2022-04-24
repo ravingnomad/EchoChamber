@@ -1,0 +1,25 @@
+#executable files
+*.exe
+
+#log files
+.log
+
+#pickle files
+*.pickle
+*.pkl
+
+#image files
+*.png
+*.jpg
+*.gif
+
+#media/video files
+*.mp3
+*.mp4
+*.webm
+
+#text/document files
+*.txt
+*.doc
+*.docx
+*.pdf
