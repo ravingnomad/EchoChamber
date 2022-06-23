@@ -1,4 +1,4 @@
-from pickle import NONE
+
 
 
 class clientInterface():

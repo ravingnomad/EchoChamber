@@ -1,0 +1,97 @@
+
+<PresetName>
+	preset_name: preset_name
+	Button:
+		id: preset_name
+		text: "To Be Determined (TBD)"
+		color: 0, 102/255, 0, 1
+		size: "300dp", "30dp"
+		size_hint: (None, None)
+		#pos_hint: {"x": 0.02, "y": .02}
+		pos: "20dp", "300dp"
+		disabled: True
+		background_disabled_normal: ''
+		background_normal: ''
+
+				
+<LoadButton>
+	load_button: load_button
+	Button:
+		id: load_button
+		text: "Load"
+		size: "70dp", "30dp"
+		size_hint: (None, None)
+		#pos_hint: {"x": .6, "y": 0.02}
+		pos: "400dp", "60dp"
+
+<EditButton>
+	edit_button: edit_button
+	Button:
+		id: edit_button
+		text: "Edit"
+		size: "70dp", "30dp"
+		size_hint: (None, None)
+		#pos_hint: {"x": .73, "y": 0.02}
+		pos: "500dp", "60dp"
+	
+<DeleteButton>
+	delete_button: delete_button
+	Button:
+		id: delete_button
+		text: "Delete"
+		size: "70dp", "30dp"
+		size_hint: (None, None)
+		#pos_hint: {"x": .86, "y": 0.02}
+		pos: "600dp", "60dp"
+		
+
+
+<PresetScreenLayout>
+	main_screen: main_screen
+	top_screen: top_screen
+	bottom_screen: bottom_screen
+	new_preset_button: new_preset_button
+	exit_button: exit_button
+	
+	BoxLayout:
+		size: root.size
+		orientation: "vertical"
+		id: main_screen
+	
+		ScrollView:
+			do_scroll_x: False
+			effect_cls: "ScrollEffect"
+			bar_width: 8
+	        
+	        GridLayout:
+	        	id: top_screen
+	        	cols: 1
+	        	size_hint_y: None
+	        	size: root.size
+	        	spacing: 0, 10
+
+
+
+		FloatLayout:
+			id: bottom_screen
+			size_hint: (1, 0.15)
+			canvas.before:
+				Color:
+					rgba: 194/255, 203/255, 194/255, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			Button:
+				id: new_preset_button
+				text: "+Add New Preset"
+				size_hint: (0.3, 0.2)
+				pos_hint: {"x": 0.1, "y": .45}
+				on_press: root.addNewPresetButton()
+				
+			Button:
+				id: exit_button
+				text: "Exit"
+				size_hint: (0.3, 0.2)
+				pos_hint: {"x": 0.6, "y": .45}
+				on_press: root.exitButton()
+				
