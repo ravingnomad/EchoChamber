@@ -14,8 +14,7 @@ from kivy.metrics import dp
 from kivy.graphics import Color, Rectangle
 from kivy.weakproxy import WeakProxy
 from kivy.properties import NumericProperty
-from attr import attr
-from lib2to3.fixer_util import Attr, attr_chain
+
 
 
 #Set app size, and min window size
