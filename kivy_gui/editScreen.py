@@ -2,10 +2,11 @@ import kivy
 from kivy.app import App
 from kivy.uix.gridlayout import GridLayout
 from kivy.lang import Builder 
+from kivy.uix.boxlayout import BoxLayout
 
 Builder.load_file("edit_screen.kv")
 
-class EditScreenLayout(GridLayout):
+class EditScreenLayout(BoxLayout):
     def __init__(self, **kwargs):
         super(EditScreenLayout, self).__init__(**kwargs)
         

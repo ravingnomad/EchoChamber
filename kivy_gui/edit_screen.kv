@@ -1,17 +1,20 @@
 
 
 <EditScreenLayout>
-	
-	FloatLayout:
-		size_hint: (1, 1)
+	bottom_screen: bottom_screen
+
+	BoxLayout:
+		size: root.size
+		orientation: 'horizontal'
 				
 		FloatLayout:
+			id: bottom_screen
 			size_hint: 1, .15
 			canvas.before:
 				Color:
 					rgba: 1, 1, 1, 1
 				Rectangle:
 					size: self.size
-					pos: root.pos
+					pos: self.pos
 
 					
