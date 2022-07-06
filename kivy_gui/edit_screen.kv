@@ -38,8 +38,8 @@
 
 <SMS@BoxLayout>
 	field_label: field_label
-	text_input: text_input
 	requirement_text: requirement_text
+	spinner_dropdown: spinner_dropdown
 	
 	orientation: "horizontal"
 	canvas.before:
@@ -62,11 +62,12 @@
 			Rectangle:
 				size: self.size
 				pos: self.pos
-	TextInput:
-		id: text_input
-		multiline: False
-		size_hint: (.8, .8)
-		text: "Hello There!"
+	Spinner:
+		id: spinner_dropdown
+		text: "Click to choose SMS!"
+		values: ["SMS1", "SMS2", "SMS3"]
+
+
 	Label:
 		id: requirement_text
 		text: "*Requirements of the input should go here"
