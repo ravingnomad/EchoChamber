@@ -1,0 +1,236 @@
+<PresetName@BoxLayout>
+	field_label: field_label
+	text_input: text_input
+	requirement_text: requirement_text
+	
+	orientation: "horizontal"
+	canvas.before:
+		Color: 
+			rgba: 1, 1, 1, 1
+		Rectangle:
+			size: self.size
+			pos: self.pos
+	Label:
+		id: field_label
+		text_size: self.width, None
+		height: self.texture_size[1]
+		text: "Preset Name: "
+		color: 0, 102/255, 0, 1
+		size_hint: (None, 1)
+		pos: "600dp", 0
+		canvas.before:
+			Color: 
+				rgba: 194/255, 203/255, 194/255, 1
+			Rectangle:
+				size: self.size
+				pos: self.pos
+	TextInput:
+		id: text_input
+		multiline: False
+		size_hint: (.8, .8)
+		text: "Hello There!"
+	Label:
+		id: requirement_text
+		text: "*Requirements of the input should go here"
+		color: 0, 0, 0, 1
+		
+
+
+<SMS@BoxLayout>
+	field_label: field_label
+	requirement_text: requirement_text
+	spinner_dropdown: spinner_dropdown
+	
+	orientation: "horizontal"
+	canvas.before:
+		Color: 
+			rgba: 1, 1, 1, 1
+		Rectangle:
+			size: self.size
+			pos: self.pos
+	Label:
+		id: field_label
+		text_size: self.width, None
+		height: self.texture_size[1]
+		text: "SMS (Short Message Service): "
+		color: 0, 102/255, 0, 1
+		size_hint: (.5, 1)
+		pos: "600dp", 0
+		canvas.before:
+			Color: 
+				rgba: 194/255, 203/255, 194/255, 1
+			Rectangle:
+				size: self.size
+				pos: self.pos
+	Spinner:
+		id: spinner_dropdown
+		text: "Click to choose SMS!"
+		values: ["SMS1", "SMS2", "SMS3"]
+
+
+	Label:
+		id: requirement_text
+		text: "*Requirements of the input should go here"
+		color: 0, 0, 0, 1
+		
+<Phone@BoxLayout>
+	field_label: field_label
+	text_input: text_input
+	requirement_text: requirement_text
+	
+	orientation: "horizontal"
+	canvas.before:
+		Color: 
+			rgba: 1, 1, 1, 1
+		Rectangle:
+			size: self.size
+			pos: self.pos
+	Label:
+		id: field_label
+		text_size: self.width, None
+		height: self.texture_size[1]
+		text: "Phone Number: "
+		color: 0, 102/255, 0, 1
+		size_hint: (None, 1)
+		pos: "600dp", 0
+		canvas.before:
+			Color: 
+				rgba: 194/255, 203/255, 194/255, 1
+			Rectangle:
+				size: self.size
+				pos: self.pos
+	TextInput:
+		id: text_input
+		multiline: False
+		size_hint: (.8, .8)
+		text: "Hello There!"
+	Label:
+		id: requirement_text
+		text: "*Requirements of the input should go here"
+		color: 0, 0, 0, 1
+		
+<Email@BoxLayout>
+	field_label: field_label
+	text_input: text_input
+	requirement_text: requirement_text
+	
+	orientation: "horizontal"
+	canvas.before:
+		Color: 
+			rgba: 1, 1, 1, 1
+		Rectangle:
+			size: self.size
+			pos: self.pos
+	Label:
+		id: field_label
+		text_size: self.width, None
+		height: self.texture_size[1]
+		text: "Email: "
+		color: 0, 102/255, 0, 1
+		size_hint: (None, 1)
+		pos: "600dp", 0
+		canvas.before:
+			Color: 
+				rgba: 194/255, 203/255, 194/255, 1
+			Rectangle:
+				size: self.size
+				pos: self.pos
+	TextInput:
+		id: text_input
+		multiline: False
+		size_hint: (.8, .8)
+		text: "Hello There!"
+	Label:
+		id: requirement_text
+		text: "*Requirements of the input should go here"
+		color: 0, 0, 0, 1
+
+
+<Password@BoxLayout>
+	field_label: field_label
+	text_input: text_input
+	requirement_text: requirement_text
+	
+	orientation: "horizontal"
+	canvas.before:
+		Color: 
+			rgba: 1, 1, 1, 1
+		Rectangle:
+			size: self.size
+			pos: self.pos
+	Label:
+		id: field_label
+		text_size: self.width, None
+		height: self.texture_size[1]
+		text: "Email Password: "
+		color: 0, 102/255, 0, 1
+		size_hint: (None, 1)
+		pos: "600dp", 0
+		canvas.before:
+			Color: 
+				rgba: 194/255, 203/255, 194/255, 1
+			Rectangle:
+				size: self.size
+				pos: self.pos
+	TextInput:
+		id: text_input
+		multiline: False
+		size_hint: (.5, .8)
+		text: "Hello There!"
+	Label:
+		id: requirement_text
+		text: "*Requirements of the input should go here"
+		color: 0, 0, 0, 1
+		
+	
+<EditScreenLayout>
+	top_screen: top_screen
+	bottom_screen: bottom_screen
+	save_button: save_button
+	exit_button: exit_button
+	preset_name_input: preset_name_input
+	
+	BoxLayout:
+		size: root.size
+		orientation: 'vertical'		
+		ScrollView:
+			do_scroll_x: False
+			effect_cls: "ScrollEffect"
+			bar_width: 8	
+			GridLayout:
+				id: top_screen
+				size_hint_y: None
+				size: root.size
+				spacing: 0, 40
+				cols: 1
+				row_default_height: "48dp"
+				row_force_default: True
+				PresetName:
+					id: preset_name_input
+				SMS:
+				Phone:
+				Email:
+				Password:
+				
+
+		FloatLayout:
+			id: bottom_screen
+			size_hint: (1, .15)
+			canvas.before:
+				Color:
+					rgba: 194/255, 203/255, 194/255, 1
+				Rectangle:
+					size: self.size
+					pos: self.pos
+			Button:
+				id: save_button
+				text: "Save"
+				size_hint: (0.3, 0.2)
+				pos_hint: {"x": 0.1, "y": .45}
+			Button:
+				id: exit_button
+				text: "Exit"
+				size_hint: (0.3, 0.2)
+				pos_hint: {"x": 0.6, "y": .45}
+
+					
