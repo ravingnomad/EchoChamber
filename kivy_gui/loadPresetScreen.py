@@ -13,18 +13,18 @@ from kivy.core.window import Window
 from kivy.metrics import dp
 from kivy.graphics import Color, Rectangle
 from kivy.weakproxy import WeakProxy
-from kivy.properties import NumericProperty
+from kivy.uix.screenmanager import Screen, SlideTransition
+from kivy.clock import Clock 
 
-
-
+import echoChamberWindow
 #Set app size, and min window size
-windowStartSize = (700, 700)
-Window.size = windowStartSize
-Window.minimum_width, Window.minimum_height = windowStartSize
+#windowStartSize = (700, 700)
+#Window.size = windowStartSize
+#Window.minimum_width, Window.minimum_height = windowStartSize
 
 
 
-Builder.load_file('load_preset_screen.kv')
+#Builder.load_file('load_preset_screen.kv')
 
 class PresetName(Button):
     def __init__(self, **kwargs):
@@ -46,7 +46,7 @@ class DeleteButton(Button):
         super(DeleteButton, self).__init__(**kwargs)
         
 
-class PresetScreenLayout(GridLayout):
+class PresetScreenLayout(Screen):
     main_screen = ObjectProperty(None)
     top_screen = ObjectProperty(None)
     bottom_screen = ObjectProperty(None)
@@ -61,7 +61,10 @@ class PresetScreenLayout(GridLayout):
                     "+Add New Preset": self.addNewPresetButton,
                     "Exit": self.exitButton
                     } 
-        self._testScroll()
+        #this is used to make sure that the kv file is loaded
+        #before the method gets called; else, properties will be
+        #NoneType
+        Clock.schedule_once(self._testScroll, .1)
 
         
         
@@ -84,7 +87,7 @@ class PresetScreenLayout(GridLayout):
         topLayout.add_widget(deleteButton)
         
         
-    def _testScroll(self):
+    def _testScroll(self, *args):
         for i in range(10):
             test = BoxLayout(size = self.top_screen.size)
             presetNameWidget = PresetName()
@@ -121,7 +124,7 @@ class PresetScreenLayout(GridLayout):
                 kwargs[attr] = getattr(oldButton, attr)   
         newButton = Button(**kwargs)
         if newButton.text in self.callbackBindings.keys():
-            newButton.bind(on_press = self.callbackBindings[newButton.text])
+            newButton.bind(on_release = self.callbackBindings[newButton.text])
         return newButton
     
     
@@ -142,7 +145,8 @@ class PresetScreenLayout(GridLayout):
             if child.text not in ["Load", "Edit", "Delete"]:
                 presetName = child.text
         print(f"The preset name is called: {presetName}\n")
-    
+        self.manager.transition = SlideTransition(direction='left')
+        self.manager.current = 'editPresetScreen'
     
     def deletePresetButton(self, event) -> None:
         print("You clicked the 'Delete' Button!")
@@ -165,12 +169,12 @@ class PresetScreenLayout(GridLayout):
 
 
 
-class AwesomeApp(App):
-    def build(self):
-        return PresetScreenLayout()
+#class AwesomeApp(App):
+#    def build(self):
+ #       return PresetScreenLayout()
     
 
     
     
-if __name__ == "__main__":
-    AwesomeApp().run()
+#if __name__ == "__main__":
+#    AwesomeApp().run()
