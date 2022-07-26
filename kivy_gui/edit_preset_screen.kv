@@ -1,6 +1,5 @@
 <Preset@BoxLayout>
 	field_label: field_label
-	text_input: text_input
 	requirement_text: requirement_text
 	
 	orientation: "horizontal"
@@ -24,11 +23,6 @@
 			Rectangle:
 				size: self.size
 				pos: self.pos
-	TextInput:
-		id: text_input
-		multiline: False
-		size_hint: (.8, .8)
-		text: "Hello There!"
 	Label:
 		id: requirement_text
 		text: "*Requirements of the input should go here"
@@ -65,7 +59,7 @@
 	Spinner:
 		id: spinner_dropdown
 		text: "Click to choose SMS!"
-		values: ["SMS1", "SMS2", "SMS3"]
+		values: ["Verizon", "AT&T", "Sprint", "T-Mobile"]
 
 
 	Label:
@@ -184,11 +178,11 @@
 		
 	
 <EditScreenLayout>
-	top_screen: top_screen
-	bottom_screen: bottom_screen
-	save_button: save_button
-	exit_button: exit_button
-	preset_name_input: preset_name_input
+	preset_name: preset_name
+	sms: sms
+	phone: phone
+	email: email
+	password: password
 	
 	BoxLayout:
 		size: root.size
@@ -206,11 +200,19 @@
 				row_default_height: "48dp"
 				row_force_default: True
 				Preset:
-					id: preset_name_input
+					TextInput:
+						id: preset_name
+						multiline: False
+						size_hint: (.8, .8)
+						text: "chicken"
 				SMS:
+					id: sms
 				Phone:
+					id: phone
 				Email:
+					id: email
 				Password:
+					id: password
 				
 
 		FloatLayout:
@@ -232,6 +234,6 @@
 				text: "Exit"
 				size_hint: (0.3, 0.2)
 				pos_hint: {"x": 0.6, "y": .45}
-				on_release: root.testButton()
+				on_release: root.exitButton()
 
 					

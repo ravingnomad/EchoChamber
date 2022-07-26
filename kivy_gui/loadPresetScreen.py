@@ -13,9 +13,9 @@ from kivy.core.window import Window
 from kivy.metrics import dp
 from kivy.graphics import Color, Rectangle
 from kivy.weakproxy import WeakProxy
-from kivy.uix.screenmanager import Screen, SlideTransition
+from kivy.uix.screenmanager import Screen, SlideTransition, NoTransition
 from kivy.clock import Clock 
-
+from functools import partial
 import echoChamberWindow
 #Set app size, and min window size
 #windowStartSize = (700, 700)
@@ -61,34 +61,25 @@ class PresetScreenLayout(Screen):
                     "+Add New Preset": self.addNewPresetButton,
                     "Exit": self.exitButton
                     } 
+        self.samplePresetData = {"preset1": {'sms': 'Sprint', 'phone': 1111111111, 'email': 'example1@gmail.com', 'password': 'alonzo'},
+                                 "preset2": {'sms': 'Verizon', 'phone': 2222222222, 'email': 'example2@gmail.com', 'password': 'buttercup'},
+                                 "preset3": {'sms': 'Sprint', 'phone': 3333333333, 'email': 'example3@gmail.com', 'password': 'jazmina11'},
+                                 "preset4": {'sms': 'T-Mobile', 'phone': 4444444444, 'email': 'example4@gmail.com', 'password': 'Kinetic'},
+                                 "preset5": {'sms': 'AT&T', 'phone': 5555555555, 'email': 'example5@gmail.com', 'password': '@dam5App113'},
+                                 "preset6": {'sms': 'AT&T', 'phone': 6666666666, 'email': 'example6@gmail.com', 'password': 'Futurio'},
+                                 "preset7": {'sms': 'Verizon', 'phone': 7777777777, 'email': 'example7@gmail.com', 'password': 'Kam3R@'},
+                                 "preset8": {'sms': 'Sprint', 'phone': 8888888888, 'email': 'example8@gmail.com', 'password': '1adf78@'},
+                                 "preset9": {'sms': 'T-Mobile', 'phone': 9999999999, 'email': 'example9@gmail.com', 'password': '80085boobs'},
+                                 "preset10": {'sms': 'T-Mobile', 'phone': 000000000, 'email': 'example10@gmail.com', 'password': 'C@pi+an'}
+                                 }
         #this is used to make sure that the kv file is loaded
         #before the method gets called; else, properties will be
         #NoneType
-        Clock.schedule_once(self._testScroll, .1)
-
+        Clock.schedule_once(self._testData, .1)
         
         
-    def _testPlacement(self):
-        topLayout = self.ids.top_screen
-        
-        presetNameWidget = PresetName()
-        loadButtonWidget = LoadButton()
-        editButtonWidget = EditButton()
-        deleteButtonWidget = DeleteButton()
-
-        presetNameLabel = self._copyButtonWidget(presetNameWidget)
-        loadButton = self._copyButtonWidget(loadButtonWidget)
-        editButton = self._copyButtonWidget(editButtonWidget)
-        deleteButton = self._copyButtonWidget(deleteButtonWidget)
-        
-        topLayout.add_widget(presetNameLabel)
-        topLayout.add_widget(loadButton)
-        topLayout.add_widget(editButton)
-        topLayout.add_widget(deleteButton)
-        
-        
-    def _testScroll(self, *args):
-        for i in range(10):
+    def _testData(self, *args):
+        for preset in self.samplePresetData.keys():
             test = BoxLayout(size = self.top_screen.size)
             presetNameWidget = PresetName()
             loadButtonWidget = LoadButton()
@@ -100,7 +91,7 @@ class PresetScreenLayout(Screen):
             editButton = self._copyButtonWidget(editButtonWidget)
             deleteButton = self._copyButtonWidget(deleteButtonWidget)
             
-            presetNameLabel.text = f"{presetNameLabel.text} #{i}"
+            presetNameLabel.text = f"{preset}"
             
             test.add_widget(presetNameLabel)
             test.add_widget(loadButton)
@@ -139,14 +130,15 @@ class PresetScreenLayout(Screen):
         
         
     def editPresetButton(self, event) -> None:
-        print("You clicked the 'Edit' Button!")
         presetName = None 
         for child in event.parent.children:
             if child.text not in ["Load", "Edit", "Delete"]:
                 presetName = child.text
-        print(f"The preset name is called: {presetName}\n")
         self.manager.transition = SlideTransition(direction='left')
         self.manager.current = 'editPresetScreen'
+        self.parent.editScreen.preset_name.text = presetName
+        #echoChamberWindow.EchoChamberWindow().loadInfoToEditScreen(presetName, self.samplePresetData[presetName])
+    
     
     def deletePresetButton(self, event) -> None:
         print("You clicked the 'Delete' Button!")

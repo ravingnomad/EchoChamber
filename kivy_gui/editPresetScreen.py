@@ -1,22 +1,25 @@
 import kivy
-from kivy.properties import ObjectProperty
+from kivy.properties import ObjectProperty, StringProperty
 from kivy.uix.screenmanager import Screen, SlideTransition
+from kivy.clock import Clock
 
 
 import echoChamberWindow
 
 class EditScreenLayout(Screen):
-    preset_name_input = ObjectProperty(None)
+    preset_name = ObjectProperty(None)
+    sms = ObjectProperty(None)
+    phone = ObjectProperty(None)
+    email = ObjectProperty(None)
+    password = ObjectProperty(None)
     
-    def __init__(self, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(EditScreenLayout, self).__init__(**kwargs)
+        #Clock.schedule_once(self.assignPresetName, .1)
         
-    def testButton(self):
+    def exitButton(self):
         self.manager.transition = SlideTransition(direction = "right")
         self.manager.current = 'loadPresetScreen'
-#class mainApp(App):
-#    def build(self):
-#        return EditScreenLayout()
+        
 
-#if __name__ == "__main__":
-#    mainApp().run()
+    
