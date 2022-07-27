@@ -75,10 +75,11 @@ class PresetScreenLayout(Screen):
         #this is used to make sure that the kv file is loaded
         #before the method gets called; else, properties will be
         #NoneType
-        Clock.schedule_once(self._testData, .1)
+        #Clock.schedule_once(self._testData, .1)
         
         
     def _testData(self, *args):
+        #self.top_screen.remove_widget()
         for preset in self.samplePresetData.keys():
             test = BoxLayout(size = self.top_screen.size)
             presetNameWidget = PresetName()
@@ -155,6 +156,33 @@ class PresetScreenLayout(Screen):
     
     def exitButton(self) -> None:
         print("You clicked the 'Exit' Button!")
+        
+        
+    def on_enter(self):
+        Clock.schedule_once(self._clearTopScreen, .1)
+        Clock.schedule_once(self._testData, .1)
+        #Clock.schedule_once(self._clearTopScreen)
+        #Clock.schedule_once(self._printAllWidgets, 1)
+        
+    def _clearTopScreen(self, *args):
+        tempList = self.top_screen.children.copy()
+        for child in tempList:
+            self.top_screen.remove_widget(child)
+            
+    
+    def _getPresetName(self, widget):
+        for grandchild in widget.children:
+            if grandchild.text not in ["Load", "Edit", "Delete"]:
+                return grandchild.text
+    
+    def _printAllWidgets(self, *args):
+        print("List of all widgets in top screen: ")
+        for child in self.top_screen.children:
+            grandchildrenText = []
+            for grandchild in child.children:
+                grandchildrenText.append(grandchild.text)
+            print(grandchildrenText)
+        #print(f"The current sample data: {self.samplePresetData}")
 
 
 
