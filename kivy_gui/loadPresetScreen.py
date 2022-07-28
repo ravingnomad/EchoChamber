@@ -61,16 +61,16 @@ class PresetScreenLayout(Screen):
                     "+Add New Preset": self.addNewPresetButton,
                     "Exit": self.exitButton
                     } 
-        self.samplePresetData = {"preset1": {'sms': 'Sprint', 'phone': 1111111111, 'email': 'example1@gmail.com', 'password': 'alonzo'},
-                                 "preset2": {'sms': 'Verizon', 'phone': 2222222222, 'email': 'example2@gmail.com', 'password': 'buttercup'},
-                                 "preset3": {'sms': 'Sprint', 'phone': 3333333333, 'email': 'example3@gmail.com', 'password': 'jazmina11'},
-                                 "preset4": {'sms': 'T-Mobile', 'phone': 4444444444, 'email': 'example4@gmail.com', 'password': 'Kinetic'},
-                                 "preset5": {'sms': 'AT&T', 'phone': 5555555555, 'email': 'example5@gmail.com', 'password': '@dam5App113'},
-                                 "preset6": {'sms': 'AT&T', 'phone': 6666666666, 'email': 'example6@gmail.com', 'password': 'Futurio'},
-                                 "preset7": {'sms': 'Verizon', 'phone': 7777777777, 'email': 'example7@gmail.com', 'password': 'Kam3R@'},
-                                 "preset8": {'sms': 'Sprint', 'phone': 8888888888, 'email': 'example8@gmail.com', 'password': '1adf78@'},
-                                 "preset9": {'sms': 'T-Mobile', 'phone': 9999999999, 'email': 'example9@gmail.com', 'password': '80085boobs'},
-                                 "preset10": {'sms': 'T-Mobile', 'phone': 000000000, 'email': 'example10@gmail.com', 'password': 'C@pi+an'}
+        self.samplePresetData = {"preset1": {'sms': 'Sprint', 'phone': '1111111111', 'email': 'example1@gmail.com', 'password': 'alonzo'},
+                                 "preset2": {'sms': 'Verizon', 'phone': '2222222222', 'email': 'example2@gmail.com', 'password': 'buttercup'},
+                                 "preset3": {'sms': 'Sprint', 'phone': '3333333333', 'email': 'example3@gmail.com', 'password': 'jazmina11'},
+                                 "preset4": {'sms': 'T-Mobile', 'phone': '4444444444', 'email': 'example4@gmail.com', 'password': 'Kinetic'},
+                                 "preset5": {'sms': 'AT&T', 'phone': '5555555555', 'email': 'example5@gmail.com', 'password': '@dam5App113'},
+                                 "preset6": {'sms': 'AT&T', 'phone': '6666666666', 'email': 'example6@gmail.com', 'password': 'Futurio'},
+                                 "preset7": {'sms': 'Verizon', 'phone': '7777777777', 'email': 'example7@gmail.com', 'password': 'Kam3R@'},
+                                 "preset8": {'sms': 'Sprint', 'phone': '8888888888', 'email': 'example8@gmail.com', 'password': '1adf78@'},
+                                 "preset9": {'sms': 'T-Mobile', 'phone': '9999999999', 'email': 'example9@gmail.com', 'password': '80085boobs'},
+                                 "preset10": {'sms': 'T-Mobile', 'phone': '000000000', 'email': 'example10@gmail.com', 'password': 'C@pi+an'}
                                  }
         #this is used to make sure that the kv file is loaded
         #before the method gets called; else, properties will be
@@ -137,8 +137,11 @@ class PresetScreenLayout(Screen):
                 presetName = child.text
         self.manager.transition = SlideTransition(direction='left')
         self.manager.current = 'editPresetScreen'
-        self.parent.editScreen.preset_name.text = presetName
-        #echoChamberWindow.EchoChamberWindow().loadInfoToEditScreen(presetName, self.samplePresetData[presetName])
+        self.parent.editScreen.preset_name.text_input.text = presetName
+        self.parent.editScreen.sms.spinner_dropdown.text = self.samplePresetData[presetName]['sms']
+        self.parent.editScreen.phone.text_input.text = self.samplePresetData[presetName]['phone']
+        self.parent.editScreen.email.text_input.text = self.samplePresetData[presetName]['email']
+        self.parent.editScreen.password.text_input.text = self.samplePresetData[presetName]['password']
     
     
     def deletePresetButton(self, event) -> None:
@@ -161,8 +164,7 @@ class PresetScreenLayout(Screen):
     def on_enter(self):
         Clock.schedule_once(self._clearTopScreen, .1)
         Clock.schedule_once(self._testData, .1)
-        #Clock.schedule_once(self._clearTopScreen)
-        #Clock.schedule_once(self._printAllWidgets, 1)
+        
         
     def _clearTopScreen(self, *args):
         tempList = self.top_screen.children.copy()

@@ -1,6 +1,7 @@
 <Preset@BoxLayout>
 	field_label: field_label
 	requirement_text: requirement_text
+	text_input: text_input
 	
 	orientation: "horizontal"
 	canvas.before:
@@ -23,6 +24,10 @@
 			Rectangle:
 				size: self.size
 				pos: self.pos
+	TextInput:
+		id: text_input
+		multiline: False
+		size_hint: (.8, .8)
 	Label:
 		id: requirement_text
 		text: "*Requirements of the input should go here"
@@ -32,7 +37,6 @@
 
 <SMS@BoxLayout>
 	field_label: field_label
-	requirement_text: requirement_text
 	spinner_dropdown: spinner_dropdown
 	
 	orientation: "horizontal"
@@ -58,15 +62,10 @@
 				pos: self.pos
 	Spinner:
 		id: spinner_dropdown
-		text: "Click to choose SMS!"
+		text: "Click to choose SMS"
 		values: ["Verizon", "AT&T", "Sprint", "T-Mobile"]
 
 
-	Label:
-		id: requirement_text
-		text: "*Requirements of the input should go here"
-		color: 0, 0, 0, 1
-		
 <Phone@BoxLayout>
 	field_label: field_label
 	text_input: text_input
@@ -200,11 +199,7 @@
 				row_default_height: "48dp"
 				row_force_default: True
 				Preset:
-					TextInput:
-						id: preset_name
-						multiline: False
-						size_hint: (.8, .8)
-						text: "chicken"
+					id: preset_name
 				SMS:
 					id: sms
 				Phone:
