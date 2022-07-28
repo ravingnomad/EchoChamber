@@ -137,7 +137,7 @@ class PresetScreenLayout(Screen):
                 presetName = child.text
         self.manager.transition = SlideTransition(direction='left')
         self.manager.current = 'editPresetScreen'
-        self.parent.editScreen.preset_name.text_input.text = presetName
+        self.parent.editScreen.preset_name.text = presetName
         self.parent.editScreen.sms.spinner_dropdown.text = self.samplePresetData[presetName]['sms']
         self.parent.editScreen.phone.text_input.text = self.samplePresetData[presetName]['phone']
         self.parent.editScreen.email.text_input.text = self.samplePresetData[presetName]['email']

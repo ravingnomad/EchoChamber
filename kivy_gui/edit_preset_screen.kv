@@ -1,7 +1,6 @@
 <Preset@BoxLayout>
 	field_label: field_label
 	requirement_text: requirement_text
-	text_input: text_input
 	
 	orientation: "horizontal"
 	canvas.before:
@@ -24,10 +23,6 @@
 			Rectangle:
 				size: self.size
 				pos: self.pos
-	TextInput:
-		id: text_input
-		multiline: False
-		size_hint: (.8, .8)
 	Label:
 		id: requirement_text
 		text: "*Requirements of the input should go here"
@@ -177,6 +172,7 @@
 		
 	
 <EditScreenLayout>
+	preset_widget: preset_widget
 	preset_name: preset_name
 	sms: sms
 	phone: phone
@@ -199,7 +195,12 @@
 				row_default_height: "48dp"
 				row_force_default: True
 				Preset:
-					id: preset_name
+					id: preset_widget
+					TextInput:
+						id: preset_name
+						multiline: False
+						size_hint: (.8, .8)
+						on_text: root.checkPresetName(self.text)
 				SMS:
 					id: sms
 				Phone:
