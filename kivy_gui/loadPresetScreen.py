@@ -139,9 +139,9 @@ class PresetScreenLayout(Screen):
         self.manager.current = 'editPresetScreen'
         self.parent.editScreen.preset_name.text = presetName
         self.parent.editScreen.sms.spinner_dropdown.text = self.samplePresetData[presetName]['sms']
-        self.parent.editScreen.phone.text_input.text = self.samplePresetData[presetName]['phone']
-        self.parent.editScreen.email.text_input.text = self.samplePresetData[presetName]['email']
-        self.parent.editScreen.password.text_input.text = self.samplePresetData[presetName]['password']
+        self.parent.editScreen.phone.text = self.samplePresetData[presetName]['phone']
+        self.parent.editScreen.email.text = self.samplePresetData[presetName]['email']
+        self.parent.editScreen.password.text = self.samplePresetData[presetName]['password']
     
     
     def deletePresetButton(self, event) -> None:

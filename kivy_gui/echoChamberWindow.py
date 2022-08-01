@@ -33,7 +33,7 @@ class echoChamberApp(App):
         manager = EchoChamberWindow()
         return manager
         
-
+#TO DO field text correction for password (want only alphanumeric and ascii)
 
 if __name__ == "__main__":
 

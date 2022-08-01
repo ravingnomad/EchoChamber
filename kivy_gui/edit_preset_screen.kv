@@ -25,9 +25,9 @@
 				pos: self.pos
 	Label:
 		id: requirement_text
-		text: "*Requirements of the input should go here"
+		text: "*Preset name must be unique\n (leading and trailing whitespace\n will be stripped to check)"
 		color: 0, 0, 0, 1
-		
+		size_hint: (.4, 1)
 
 
 <SMS@BoxLayout>
@@ -63,7 +63,6 @@
 
 <Phone@BoxLayout>
 	field_label: field_label
-	text_input: text_input
 	requirement_text: requirement_text
 	
 	orientation: "horizontal"
@@ -87,19 +86,16 @@
 			Rectangle:
 				size: self.size
 				pos: self.pos
-	TextInput:
-		id: text_input
-		multiline: False
-		size_hint: (.8, .8)
-		text: "Hello There!"
 	Label:
 		id: requirement_text
-		text: "*Requirements of the input should go here"
+		text: "*Phone must be 10 digits\n with no spaces or dashes"
 		color: 0, 0, 0, 1
+		size_hint: (0.4, 1)
+
+		
 		
 <Email@BoxLayout>
 	field_label: field_label
-	text_input: text_input
 	requirement_text: requirement_text
 	
 	orientation: "horizontal"
@@ -123,20 +119,15 @@
 			Rectangle:
 				size: self.size
 				pos: self.pos
-	TextInput:
-		id: text_input
-		multiline: False
-		size_hint: (.8, .8)
-		text: "Hello There!"
 	Label:
 		id: requirement_text
-		text: "*Requirements of the input should go here"
+		text: "*Email must be\n a 'gmail' account"
 		color: 0, 0, 0, 1
+		size_hint: (0.3, 1)
 
 
 <Password@BoxLayout>
 	field_label: field_label
-	text_input: text_input
 	requirement_text: requirement_text
 	
 	orientation: "horizontal"
@@ -160,14 +151,10 @@
 			Rectangle:
 				size: self.size
 				pos: self.pos
-	TextInput:
-		id: text_input
-		multiline: False
-		size_hint: (.5, .8)
-		text: "Hello There!"
+
 	Label:
 		id: requirement_text
-		text: "*Requirements of the input should go here"
+		text: "*Password must be the password for your gmail account.\nOnly alphanumeric and/or ASCII characters "
 		color: 0, 0, 0, 1
 		
 	
@@ -175,8 +162,11 @@
 	preset_widget: preset_widget
 	preset_name: preset_name
 	sms: sms
+	phone_widget: phone_widget
 	phone: phone
+	email_widget: email_widget
 	email: email
+	password_widget: password_widget
 	password: password
 	
 	BoxLayout:
@@ -200,15 +190,30 @@
 						id: preset_name
 						multiline: False
 						size_hint: (.8, .8)
-						on_text: root.checkPresetName(self.text)
+						on_text: root.checkPresetNameField(self.text)
 				SMS:
 					id: sms
 				Phone:
-					id: phone
+					id: phone_widget
+					TextInput:
+						id: phone
+						multiline: False
+						size_hint: (.8, .8)
+						on_text: root.checkPhoneNumberField(self.text)
 				Email:
-					id: email
+					id: email_widget
+					TextInput:
+						id: email
+						multiline: False
+						size_hint: (.8, .8)
+						on_text: root.checkEmailField(self.text)
 				Password:
-					id: password
+					id: password_widget
+					TextInput:
+						id: password
+						multiline: False
+						size_hint: (.5, .8)
+						on_text: root.checkPasswordField(self.text)
 				
 
 		FloatLayout:
