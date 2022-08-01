@@ -1,22 +1,16 @@
-from kivy.config import Config
-Config.set('graphics', 'resizable', 0)
 
-from kivy.core.window import Window
-windowMinWidth = 500
-windowMinHeight = 180
-Window.minimum_width, Window.minimum_height = windowMinWidth, windowMinHeight
-Window.size = (windowMinWidth, windowMinHeight)
-
+from kivy.properties import ObjectProperty
 from kivy.lang import Builder
 from kivy.app import App
-from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.screenmanager import Screen
+from kivy.uix.popup import Popup
 
 
 Builder.load_file("delete_preset_screen.kv")
 
-class DeletePresetScreen(FloatLayout):
-    pass 
-
+class DeletePresetScreen(Popup):
+    delete_button = ObjectProperty(None)
+    cancel_button = ObjectProperty(None) 
 
 #class MyApp(App):
 #    def build(self):

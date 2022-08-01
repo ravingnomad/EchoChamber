@@ -17,6 +17,7 @@ from kivy.uix.screenmanager import Screen, SlideTransition, NoTransition
 from kivy.clock import Clock 
 from functools import partial
 import echoChamberWindow
+import deletePresetScreen
 #Set app size, and min window size
 #windowStartSize = (700, 700)
 #Window.size = windowStartSize
@@ -151,8 +152,7 @@ class PresetScreenLayout(Screen):
             if child.text not in ["Load", "Edit", "Delete"]:
                 presetName = child.text
         print(f"The preset name is called: {presetName}\n")
-        from subprocess import Popen, PIPE 
-        process = Popen(['python3', 'deletePresetScreen.py'], stdout=PIPE, stderr=PIPE)
+        print(deletePresetScreen.DeletePresetScreen().open())
         
         
     def addNewPresetButton(self) -> None:
