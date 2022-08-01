@@ -151,6 +151,8 @@ class PresetScreenLayout(Screen):
             if child.text not in ["Load", "Edit", "Delete"]:
                 presetName = child.text
         print(f"The preset name is called: {presetName}\n")
+        from subprocess import Popen, PIPE 
+        process = Popen(['python3', 'deletePresetScreen.py'], stdout=PIPE, stderr=PIPE)
         
         
     def addNewPresetButton(self) -> None:

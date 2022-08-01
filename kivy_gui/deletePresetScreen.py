@@ -18,11 +18,11 @@ class DeletePresetScreen(FloatLayout):
     pass 
 
 
-class MyApp(App):
-    def build(self):
-        return DeletePresetScreen()
+#class MyApp(App):
+#    def build(self):
+#       return DeletePresetScreen()
     
     
     
-if __name__ == "__main__":
-    MyApp().run()
+#if __name__ == "__main__":
+#    MyApp().run()

@@ -3,27 +3,28 @@
 	delete_button: delete_button
 	cancel_button: cancel_button
 	prompt_text: prompt_text
-	FloatLayout:
-		canvas.before:
-			Color: 
-				rgba: 213/255, 212/255, 212/255, 1
-			Rectangle:
-				pos: self.pos
-				size: self.size
-		Label:
-			id: prompt_text
-			text: "Are you sure you want to delete the preset '[Preset Name]'?\nAll info in this preset will be lost."
-			pos_hint: {"center_x": .5}
-			color: 0, 0, 0, 1
-	
-		Button:
-			id: delete_button
-			text: "Delete"
-			size_hint: (.2, .15)
-			pos_hint: {"x": .2, "y": .1}
-			
-		Button:
-			id: cancel_button
-			text: "Cancel"
-			size_hint: (.2, .15)
-			pos_hint: {"x": .6, "y": .1}
+	Popup:
+		FloatLayout:
+			canvas.before:
+				Color: 
+					rgba: 213/255, 212/255, 212/255, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			Label:
+				id: prompt_text
+				text: "Are you sure you want to delete the preset '[Preset Name]'?\nAll info in this preset will be lost."
+				pos_hint: {"center_x": .5}
+				color: 0, 0, 0, 1
+		
+			Button:
+				id: delete_button
+				text: "Delete"
+				size_hint: (.2, .15)
+				pos_hint: {"x": .2, "y": .1}
+				
+			Button:
+				id: cancel_button
+				text: "Cancel"
+				size_hint: (.2, .15)
+				pos_hint: {"x": .6, "y": .1}

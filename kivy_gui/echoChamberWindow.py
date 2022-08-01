@@ -1,5 +1,6 @@
 import loadPresetScreen
 import editPresetScreen
+import deletePresetScreen
 import kivy
 from kivy.lang import Builder 
 from kivy.app import App 
@@ -30,6 +31,7 @@ class echoChamberApp(App):
         Builder.load_file("echo_chamber_window.kv")
         Builder.load_file("load_preset_screen.kv")
         Builder.load_file("edit_preset_screen.kv")
+        Builder.load_file("delete_preset_screen.kv")
         manager = EchoChamberWindow()
         return manager
         
