@@ -1,17 +1,12 @@
 from kivy.core.window import Window
 from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.widget import Widget
-from kivy.uix.scrollview import ScrollView
 from kivy.properties import ObjectProperty
-from kivy.metrics import dp
 from kivy.uix.screenmanager import Screen, SlideTransition
 from kivy.clock import Clock 
 
 import echoChamberWindow
 import deletePresetScreen
-
-
 
 
 
@@ -44,7 +39,7 @@ class PresetScreenLayout(Screen):
     
     def __init__(self, **kwargs):
         super(PresetScreenLayout, self).__init__(**kwargs)
-        self.callbackBindings = {"Load": self.loadPresetButton,
+        self.buttonCallbackBindings = {"Load": self.loadPresetButton,
                     "Edit": self.editPresetButton,
                     "Delete": self.deletePresetButton,
                     "+Add New Preset": self.addNewPresetButton,
@@ -62,8 +57,22 @@ class PresetScreenLayout(Screen):
                                  "preset10": {'sms': 'T-Mobile', 'phone': '0000000000', 'email': 'example10@gmail.com', 'password': 'C@pi+an'}
                                  }
         
+    def on_enter(self):
+        self.refreshScreen()
         
-    def _testData(self, *args):
+        
+    def refreshScreen(self):
+        Clock.schedule_once(self._clearTopScreen, .1)
+        Clock.schedule_once(self._loadPresetData, .1)
+        
+        
+    def _clearTopScreen(self, *args):
+        tempList = self.top_screen.children.copy()
+        for child in tempList:
+            self.top_screen.remove_widget(child)
+            
+            
+    def _loadPresetData(self, *args):
         for preset in self.samplePresetData.keys():
             test = BoxLayout(size = self.top_screen.size)
             presetNameWidget = PresetName()
@@ -98,8 +107,8 @@ class PresetScreenLayout(Screen):
             and attr not in ('proxy_ref', 'refs', 'uid', 'parent', 'canvas'):
                 kwargs[attr] = getattr(oldButton, attr)   
         newButton = Button(**kwargs)
-        if newButton.text in self.callbackBindings.keys():
-            newButton.bind(on_release = self.callbackBindings[newButton.text])
+        if newButton.text in self.buttonCallbackBindings.keys():
+            newButton.bind(on_release = self.buttonCallbackBindings[newButton.text])
         return newButton
     
     
@@ -142,22 +151,6 @@ class PresetScreenLayout(Screen):
         Window.close()
         
         
-    def on_enter(self):
-        self.refreshScreen()
-        
-        
-    def refreshScreen(self):
-        Clock.schedule_once(self._clearTopScreen, .1)
-        Clock.schedule_once(self._testData, .1)
-        
-        
-    def _clearTopScreen(self, *args):
-        tempList = self.top_screen.children.copy()
-        print(self.top_screen.children)
-        for child in tempList:
-            self.top_screen.remove_widget(child)
-            
-    
     def _getPresetName(self, widget):
         for grandchild in widget.children:
             if grandchild.text not in ["Load", "Edit", "Delete"]:
