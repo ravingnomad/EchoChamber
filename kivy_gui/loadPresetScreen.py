@@ -18,14 +18,10 @@ from kivy.clock import Clock
 from functools import partial
 import echoChamberWindow
 import deletePresetScreen
-#Set app size, and min window size
-#windowStartSize = (700, 700)
-#Window.size = windowStartSize
-#Window.minimum_width, Window.minimum_height = windowStartSize
 
 
 
-#Builder.load_file('load_preset_screen.kv')
+
 
 class PresetName(Button):
     def __init__(self, **kwargs):
@@ -73,10 +69,6 @@ class PresetScreenLayout(Screen):
                                  "preset9": {'sms': 'T-Mobile', 'phone': '9999999999', 'email': 'example9@gmail.com', 'password': '80085boobs'},
                                  "preset10": {'sms': 'T-Mobile', 'phone': '000000000', 'email': 'example10@gmail.com', 'password': 'C@pi+an'}
                                  }
-        #this is used to make sure that the kv file is loaded
-        #before the method gets called; else, properties will be
-        #NoneType
-        #Clock.schedule_once(self._testData, .1)
         
         
     def _testData(self, *args):
@@ -152,7 +144,15 @@ class PresetScreenLayout(Screen):
             if child.text not in ["Load", "Edit", "Delete"]:
                 presetName = child.text
         print(f"The preset name is called: {presetName}\n")
-        print(deletePresetScreen.DeletePresetScreen().open())
+        popupObject = deletePresetScreen.DeletePresetScreen()
+        popupObject.currentPresetName = presetName
+        popupObject.currentPresetScreen = self
+        popupObject.open()
+        
+        
+    def _deletePreset(self, presetName):
+        del self.samplePresetData[presetName]
+        self.refreshScreen()
         
         
     def addNewPresetButton(self) -> None:
@@ -164,12 +164,17 @@ class PresetScreenLayout(Screen):
         
         
     def on_enter(self):
+        self.refreshScreen()
+        
+        
+    def refreshScreen(self):
         Clock.schedule_once(self._clearTopScreen, .1)
         Clock.schedule_once(self._testData, .1)
         
         
     def _clearTopScreen(self, *args):
         tempList = self.top_screen.children.copy()
+        print(self.top_screen.children)
         for child in tempList:
             self.top_screen.remove_widget(child)
             
