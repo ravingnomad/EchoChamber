@@ -1,22 +1,12 @@
-import kivy
 from kivy.core.window import Window
-from kivy.app import App
 from kivy.uix.button import Button
-from kivy.uix.label import Label
-from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.widget import Widget
 from kivy.uix.scrollview import ScrollView
 from kivy.properties import ObjectProperty
-from kivy.lang import Builder
-from kivy.core.window import Window
 from kivy.metrics import dp
-from kivy.graphics import Color, Rectangle
-from kivy.weakproxy import WeakProxy
-from kivy.uix.screenmanager import Screen, SlideTransition, NoTransition
+from kivy.uix.screenmanager import Screen, SlideTransition
 from kivy.clock import Clock 
-from functools import partial
 
 import echoChamberWindow
 import deletePresetScreen
@@ -69,12 +59,11 @@ class PresetScreenLayout(Screen):
                                  "preset7": {'sms': 'Verizon', 'phone': '7777777777', 'email': 'example7@gmail.com', 'password': 'Kam3R@'},
                                  "preset8": {'sms': 'Sprint', 'phone': '8888888888', 'email': 'example8@gmail.com', 'password': '1adf78@'},
                                  "preset9": {'sms': 'T-Mobile', 'phone': '9999999999', 'email': 'example9@gmail.com', 'password': '80085boobs'},
-                                 "preset10": {'sms': 'T-Mobile', 'phone': '000000000', 'email': 'example10@gmail.com', 'password': 'C@pi+an'}
+                                 "preset10": {'sms': 'T-Mobile', 'phone': '0000000000', 'email': 'example10@gmail.com', 'password': 'C@pi+an'}
                                  }
         
         
     def _testData(self, *args):
-        #self.top_screen.remove_widget()
         for preset in self.samplePresetData.keys():
             test = BoxLayout(size = self.top_screen.size)
             presetNameWidget = PresetName()
@@ -100,7 +89,6 @@ class PresetScreenLayout(Screen):
         
     def _copyButtonWidget(self, mainWidget) -> None:
         kwargs = {}
-        
         #extracts id of Button() widget from the kivy rule
         buttonID = list(mainWidget.ids.keys())[0]
         oldButton = mainWidget.ids[buttonID]
@@ -115,21 +103,14 @@ class PresetScreenLayout(Screen):
         return newButton
     
     
-    #when a row is created, can check presetname of row by accessing button's parent, and checking the 'text' field of each of its 'children'
     def loadPresetButton(self, event) -> None:
         print("You clicked the 'Load' Button!")
-        presetName = None 
-        for child in event.parent.children:
-            if child.text not in ["Load", "Edit", "Delete"]:
-                presetName = child.text
+        presetName = self._getPresetName(event.parent)
         print(f"The preset name is called: {presetName}\n")
         
         
     def editPresetButton(self, event) -> None:
-        presetName = None 
-        for child in event.parent.children:
-            if child.text not in ["Load", "Edit", "Delete"]:
-                presetName = child.text
+        presetName = self._getPresetName(event.parent)
         self.manager.transition = SlideTransition(direction='left')
         self.manager.current = 'editPresetScreen'
         self.parent.editScreen.preset_name.text = presetName
@@ -140,12 +121,7 @@ class PresetScreenLayout(Screen):
     
     
     def deletePresetButton(self, event) -> None:
-        print("You clicked the 'Delete' Button!")
-        presetName = None 
-        for child in event.parent.children:
-            if child.text not in ["Load", "Edit", "Delete"]:
-                presetName = child.text
-        print(f"The preset name is called: {presetName}\n")
+        presetName = self._getPresetName(event.parent) 
         popupObject = deletePresetScreen.DeletePresetScreen()
         popupObject.currentPresetName = presetName
         popupObject.currentPresetScreen = self
