@@ -158,7 +158,8 @@ class PresetScreenLayout(Screen):
         
         
     def addNewPresetButton(self) -> None:
-        print("You clicked the 'Add New Preset' Button!")
+        self.manager.transition = SlideTransition(direction='left')
+        self.manager.current = 'editPresetScreen'
         
     
     def exitButton(self) -> None:
