@@ -1,4 +1,5 @@
 import kivy
+from kivy.core.window import Window
 from kivy.app import App
 from kivy.uix.button import Button
 from kivy.uix.label import Label
@@ -16,6 +17,7 @@ from kivy.weakproxy import WeakProxy
 from kivy.uix.screenmanager import Screen, SlideTransition, NoTransition
 from kivy.clock import Clock 
 from functools import partial
+
 import echoChamberWindow
 import deletePresetScreen
 
@@ -160,7 +162,7 @@ class PresetScreenLayout(Screen):
         
     
     def exitButton(self) -> None:
-        print("You clicked the 'Exit' Button!")
+        Window.close()
         
         
     def on_enter(self):
@@ -184,26 +186,6 @@ class PresetScreenLayout(Screen):
             if grandchild.text not in ["Load", "Edit", "Delete"]:
                 return grandchild.text
     
-    def _printAllWidgets(self, *args):
-        print("List of all widgets in top screen: ")
-        for child in self.top_screen.children:
-            grandchildrenText = []
-            for grandchild in child.children:
-                grandchildrenText.append(grandchild.text)
-            print(grandchildrenText)
-        #print(f"The current sample data: {self.samplePresetData}")
 
 
 
-
-
-
-#class AwesomeApp(App):
-#    def build(self):
- #       return PresetScreenLayout()
-    
-
-    
-    
-#if __name__ == "__main__":
-#    AwesomeApp().run()
