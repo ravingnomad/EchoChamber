@@ -120,13 +120,13 @@ class PresetScreenLayout(Screen):
         
     def editPresetButton(self, event) -> None:
         presetName = self._getPresetName(event.parent)
-        self.manager.transition = SlideTransition(direction='left')
-        self.manager.current = 'editPresetScreen'
-        self.parent.editScreen.preset_name.text = presetName
+        self.parent.editScreen.loadedPresetName = presetName
         self.parent.editScreen.sms.spinner_dropdown.text = self.samplePresetData[presetName]['sms']
         self.parent.editScreen.phone.text = self.samplePresetData[presetName]['phone']
         self.parent.editScreen.email.text = self.samplePresetData[presetName]['email']
         self.parent.editScreen.password.text = self.samplePresetData[presetName]['password']
+        self.manager.transition = SlideTransition(direction='left')
+        self.manager.current = 'editPresetScreen'
     
     
     def deletePresetButton(self, event) -> None:

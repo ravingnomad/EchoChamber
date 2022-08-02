@@ -30,11 +30,11 @@ class EditScreenLayout(Screen):
         self.allPresetNames = {}
       
       
-    def on_enter(self):
-        self.loadedPresetName = self.preset_name.text
+    def on_pre_enter(self):
+        self.preset_name.text = self.loadedPresetName
         self.allPresetNames = self.parent.presetScreen.samplePresetData.keys()
         self._checkEmptyFields()
-        
+
         
     def on_leave(self):
         self._clearFields()
@@ -42,6 +42,7 @@ class EditScreenLayout(Screen):
         
     def _clearFields(self):
         self.preset_name.text = ""
+        self.loadedPresetName = ""
         self.sms.spinner_dropdown.text = "Click to choose SMS"
         self.phone.text = ""
         self.email.text = ""
@@ -94,6 +95,7 @@ class EditScreenLayout(Screen):
 
     def checkPresetNameField(self, text):
         if (text.strip() != self.loadedPresetName and text.strip() in self.allPresetNames) or text.strip() == "":
+            #print(f"Loaded preset name: {self.loadedPresetName}       Current preset name: {self.preset_name.text}")
             self.presetNameViolation = True
             self.preset_widget.requirement_text.color = [1, 0, 0, 1]
         else:
