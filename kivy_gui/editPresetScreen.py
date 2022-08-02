@@ -36,6 +36,18 @@ class EditScreenLayout(Screen):
         self._checkEmptyFields()
         
         
+    def on_leave(self):
+        self._clearFields()
+        
+        
+    def _clearFields(self):
+        self.preset_name.text = ""
+        self.sms.spinner_dropdown.text = "Click to choose SMS"
+        self.phone.text = ""
+        self.email.text = ""
+        self.password.text = ""
+        
+        
     def _checkEmptyFields(self):
         if self.preset_name.text == "":
             self.preset_widget.requirement_text.color = [1, 0, 0, 1]
