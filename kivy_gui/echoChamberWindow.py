@@ -1,12 +1,11 @@
-import loadPresetScreen
-import editPresetScreen
-
 from kivy.lang import Builder 
 from kivy.app import App 
-from kivy.uix.screenmanager import ScreenManager, NoTransition
+from kivy.uix.screenmanager import ScreenManager
 from kivy.properties import ObjectProperty
-from kivy.clock import Clock
-from kivy.uix.textinput import TextInput
+
+
+import loadPresetScreen
+import editPresetScreen
 
 
 

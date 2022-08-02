@@ -1,11 +1,10 @@
-import kivy
-from kivy.properties import ObjectProperty, StringProperty
+from kivy.properties import ObjectProperty
 from kivy.uix.screenmanager import Screen, SlideTransition
-from kivy.clock import Clock
-from kivy.graphics import Color
-
 
 import echoChamberWindow
+
+
+
 
 class EditScreenLayout(Screen):
     preset_widget = ObjectProperty(None)
@@ -31,7 +30,9 @@ class EditScreenLayout(Screen):
       
       
     def on_pre_enter(self):
-        self.preset_name.text = self.loadedPresetName
+        if self.loadedPresetName != None:
+            print(self.loadedPresetName)
+            self.preset_name.text = self.loadedPresetName
         self.allPresetNames = self.parent.presetScreen.samplePresetData.keys()
         self._checkEmptyFields()
 
@@ -42,7 +43,7 @@ class EditScreenLayout(Screen):
         
     def _clearFields(self):
         self.preset_name.text = ""
-        self.loadedPresetName = ""
+        self.loadedPresetName = None
         self.sms.spinner_dropdown.text = "Click to choose SMS"
         self.phone.text = ""
         self.email.text = ""
@@ -95,47 +96,52 @@ class EditScreenLayout(Screen):
 
     def checkPresetNameField(self, text):
         if (text.strip() != self.loadedPresetName and text.strip() in self.allPresetNames) or text.strip() == "":
-            #print(f"Loaded preset name: {self.loadedPresetName}       Current preset name: {self.preset_name.text}")
             self.presetNameViolation = True
-            self.preset_widget.requirement_text.color = [1, 0, 0, 1]
+            self._changeFieldColor(self.preset_widget.requirement_text, 'red')
         else:
             self.presetNameViolation = False
-            self.preset_widget.requirement_text.color = [0, 0, 0, 1]
+            self._changeFieldColor(self.preset_widget.requirement_text, 'black')
 
         
     def checkPhoneNumberField(self, text):
         if len(text) != 10 or text.isdigit() == False or text.strip() == "":
             self.phoneViolation = True
-            self.phone_widget.requirement_text.color = [1, 0, 0, 1]
+            self._changeFieldColor(self.phone_widget.requirement_text, 'red')
         else:
             self.phoneViolation = False
-            self.phone_widget.requirement_text.color = [0, 0, 0, 1]
+            self._changeFieldColor(self.phone_widget.requirement_text, 'black')
     
     
     def checkEmailField(self, text):
         splitText = text.split('@')
         if len(splitText) != 2 or splitText[0] == "" or splitText[-1] != 'gmail.com' or text.strip() == "":
             self.emailViolation = True
-            self.email_widget.requirement_text.color = [1, 0, 0, 1]
+            self._changeFieldColor(self.email_widget.requirement_text, 'red')
         else:
             self.emailViolation = False
-            self.email_widget.requirement_text.color = [0, 0, 0, 1]
+            self._changeFieldColor(self.email_widget.requirement_text, 'black')
     
     
     def checkPasswordField(self, text):
         if self._validPassword(text) == False or text.strip() == "":
             self.passwordViolation = True
-            self.password_widget.requirement_text.color = [1, 0, 0, 1]
+            self._changeFieldColor(self.password_widget.requirement_text, 'red')
         else:
             self.passwordViolation = False
-            self.password_widget.requirement_text.color = [0, 0, 0, 1]
+            self._changeFieldColor(self.password_widget.requirement_text, 'black')
+            
+            
+    def _changeFieldColor(self, field, color):
+        if color.lower() == 'black':
+            field.color = [0, 0, 0, 1]
+        if color.lower() == 'red':
+            field.color = [1, 0, 0, 1]
             
             
     def hasSMSViolation(self):
         return self.sms.spinner_dropdown.text == "Click to choose SMS"
         
             
-    
     def _validPassword(self, pswd):
         for char in pswd:
             if char not in self.validPasswordChars:
@@ -150,6 +156,6 @@ class EditScreenLayout(Screen):
 
 
     def _presetNameChanged(self):
-        return self.loadedPresetName != "" and self.loadedPresetName != self.preset_name.text
+        return self.loadedPresetName != None and self.loadedPresetName != self.preset_name.text
 
         
