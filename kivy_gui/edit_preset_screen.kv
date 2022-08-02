@@ -32,7 +32,6 @@
 
 <SMS@BoxLayout>
 	field_label: field_label
-	spinner_dropdown: spinner_dropdown
 	
 	orientation: "horizontal"
 	canvas.before:
@@ -55,10 +54,7 @@
 			Rectangle:
 				size: self.size
 				pos: self.pos
-	Spinner:
-		id: spinner_dropdown
-		text: "Click to choose SMS"
-		values: ["Verizon", "AT&T", "Sprint", "T-Mobile"]
+
 
 
 <Phone@BoxLayout>
@@ -193,6 +189,12 @@
 						on_text: root.checkPresetNameField(self.text)
 				SMS:
 					id: sms
+					spinner_dropdown: spinner_dropdown
+					Spinner:
+						id: spinner_dropdown
+						text: "Click to choose SMS"
+						values: ["Verizon", "AT&T", "Sprint", "T-Mobile"]
+						on_text: root.checkSMSViolation()
 				Phone:
 					id: phone_widget
 					TextInput:

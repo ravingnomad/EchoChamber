@@ -85,12 +85,12 @@
 				text: "+Add New Preset"
 				size_hint: (0.3, 0.2)
 				pos_hint: {"x": 0.1, "y": .45}
-				on_press: root.addNewPresetButton()
+				on_release: root.addNewPresetButton()
 				
 			Button:
 				id: exit_button
 				text: "Exit"
 				size_hint: (0.3, 0.2)
 				pos_hint: {"x": 0.6, "y": .45}
-				on_press: root.exitButton()
+				on_release: root.exitButton()
 				
