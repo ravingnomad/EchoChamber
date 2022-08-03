@@ -14,34 +14,54 @@ class ViolationEnum(enum.Enum):
     passwordViolation = 4
     emptyFieldViolation = 5
     
-    
-    
-    
+
 
 
 class EditScreenLayout(Screen):
     preset_widget = ObjectProperty(None)
-    preset_name = ObjectProperty(None)
-    sms = ObjectProperty(None)
+    sms_widget = ObjectProperty(None)
     phone_widget = ObjectProperty(None)
-    phone = ObjectProperty(None)
     email_widget = ObjectProperty(None)
-    email = ObjectProperty(None)
     password_widget = ObjectProperty(None)
-    password = ObjectProperty(None)
     
     
     def __init__(self, *args, **kwargs):
         super(EditScreenLayout, self).__init__(**kwargs)
         self.loadedPresetName = None
+        self.loadedPresetInfo = None
         self.fieldViolations = [0 for i in range(len(ViolationEnum))]
         self.validPasswordChars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~'
-        self.allPresetNames = {}
+        self.allPresetNames = []
+      
+    
+    def setText(self, field, text):
+        if field == self.sms_widget:
+            field.spinner_dropdown.text = text 
+        else:
+            field.text_input.text = text
+    
+    
+    def getText(self, field):
+        if field == self.sms_widget:
+            return field.spinner_dropdown.text
+        return field.text_input.text
+    
+    
+    def _changeFieldColor(self, field, color):
+        if color.lower() == 'black':
+            field.requirement_text.color = [0, 0, 0, 1]
+        if color.lower() == 'red':
+            field.requirement_text.color = [1, 0, 0, 1]
       
       
     def on_pre_enter(self):
         if self.loadedPresetName != None:
-            self.preset_name.text = self.loadedPresetName
+            self.setText(self.preset_widget, self.loadedPresetName)
+        if self.loadedPresetInfo != None:
+            self.setText(self.sms_widget, self.loadedPresetInfo['sms'])
+            self.setText(self.phone_widget, self.loadedPresetInfo['phone'])
+            self.setText(self.email_widget, self.loadedPresetInfo['email'])
+            self.setText(self.password_widget, self.loadedPresetInfo['password'])
         self.allPresetNames = self.parent.presetScreen.samplePresetData.keys()
         self._checkEmptyFields()
         self.checkSMSViolation()
@@ -52,12 +72,13 @@ class EditScreenLayout(Screen):
         
         
     def _clearFields(self):
-        self.preset_name.text = ""
+        self.setText(self.preset_widget, "")
         self.loadedPresetName = None
-        self.sms.spinner_dropdown.text = "Click to choose SMS"
-        self.phone.text = ""
-        self.email.text = ""
-        self.password.text = ""
+        self.loadedPresetInfo = None
+        self.setText(self.sms_widget, "Click to choose SMS")
+        self.setText(self.phone_widget, "")
+        self.setText(self.email_widget, "")
+        self.setText(self.password_widget, "")
         
         
     def hasFieldViolation(self):
@@ -66,13 +87,13 @@ class EditScreenLayout(Screen):
         
     def _checkEmptyFields(self):
         emptyFields = []
-        if self.preset_name.text == "":
+        if self.getText(self.preset_widget) == "":
             emptyFields.append(self.preset_widget)
-        if self.phone.text == "":
+        if self.getText(self.phone_widget) == "":
             emptyFields.append(self.phone_widget)
-        if self.email.text == "":
+        if self.getText(self.email_widget) == "":
             emptyFields.append(self.email_widget)
-        if self.password.text == "":
+        if self.getText(self.password_widget) == "":
             emptyFields.append(self.password_widget)
             
         if emptyFields != []:
@@ -88,7 +109,7 @@ class EditScreenLayout(Screen):
             
             
     def checkSMSViolation(self):
-        if self.sms.spinner_dropdown.text == "Click to choose SMS":
+        if self.getText(self.sms_widget) == "Click to choose SMS":
             self.fieldViolations[ViolationEnum.smsViolation.value] = 1
         else:
             self.fieldViolations[ViolationEnum.smsViolation.value] = 0
@@ -138,11 +159,7 @@ class EditScreenLayout(Screen):
         return True
             
             
-    def _changeFieldColor(self, field, color):
-        if color.lower() == 'black':
-            field.requirement_text.color = [0, 0, 0, 1]
-        if color.lower() == 'red':
-            field.requirement_text.color = [1, 0, 0, 1]
+
             
         
 
@@ -155,11 +172,10 @@ class EditScreenLayout(Screen):
         #have to check; no trigger event that can trigger a check for all fields only once; if don't check, when adding new preset, 
         #this field violation will still have its flag raised
         self._checkEmptyFields()
-        print(self.fieldViolations)
         if self.hasFieldViolation() == False:
             if self._presetNameChanged():
                 del self.parent.presetScreen.samplePresetData[self.loadedPresetName]
-                newPresetName = self.preset_name.text
+                newPresetName = self.getText(self.preset_widget)
                 self.parent.presetScreen.samplePresetData[newPresetName] = {}
             self._saveEntries()
             self.manager.transition = SlideTransition(direction = "right")
@@ -167,17 +183,18 @@ class EditScreenLayout(Screen):
             
             
     def _presetNameChanged(self):
-        return self.loadedPresetName != None and self.loadedPresetName != self.preset_name.text
+        return self.loadedPresetName != None and self.loadedPresetName != self.getText(self.preset_widget)
             
     
     def _saveEntries(self):
         toSaveDict = {}
-        if self.preset_name.text in self.parent.presetScreen.samplePresetData.keys():
-            toSaveDict = self.parent.presetScreen.samplePresetData[self.preset_name.text]
-        toSaveDict['sms'] = self.sms.spinner_dropdown.text
-        toSaveDict['phone'] = self.phone.text
-        toSaveDict['email'] = self.email.text
-        toSaveDict['password'] = self.password.text
-        self.parent.presetScreen.samplePresetData[self.preset_name.text] = toSaveDict
+        currentPresetName = self.getText(self.preset_widget)
+        if currentPresetName in self.allPresetNames:
+            toSaveDict = self.parent.presetScreen.samplePresetData[currentPresetName]
+        toSaveDict['sms'] = self.getText(self.sms_widget)
+        toSaveDict['phone'] = self.getText(self.phone_widget)
+        toSaveDict['email'] = self.getText(self.email_widget)
+        toSaveDict['password'] = self.getText(self.password_widget)
+        self.parent.presetScreen.samplePresetData[currentPresetName] = toSaveDict
 
         

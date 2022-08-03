@@ -156,14 +156,10 @@
 	
 <EditScreenLayout>
 	preset_widget: preset_widget
-	preset_name: preset_name
-	sms: sms
+	sms_widget: sms_widget
 	phone_widget: phone_widget
-	phone: phone
 	email_widget: email_widget
-	email: email
 	password_widget: password_widget
-	password: password
 	
 	BoxLayout:
 		size: root.size
@@ -182,13 +178,14 @@
 				row_force_default: True
 				Preset:
 					id: preset_widget
+					text_input: preset_text
 					TextInput:
-						id: preset_name
+						id: preset_text
 						multiline: False
 						size_hint: (.8, .8)
 						on_text: root.checkPresetNameField(self.text)
 				SMS:
-					id: sms
+					id: sms_widget
 					spinner_dropdown: spinner_dropdown
 					Spinner:
 						id: spinner_dropdown
@@ -197,22 +194,25 @@
 						on_text: root.checkSMSViolation()
 				Phone:
 					id: phone_widget
+					text_input: phone_text
 					TextInput:
-						id: phone
+						id: phone_text
 						multiline: False
 						size_hint: (.8, .8)
 						on_text: root.checkPhoneNumberField(self.text)
 				Email:
 					id: email_widget
+					text_input: email_text
 					TextInput:
-						id: email
+						id: email_text
 						multiline: False
 						size_hint: (.8, .8)
 						on_text: root.checkEmailField(self.text)
 				Password:
 					id: password_widget
+					text_input: password_text
 					TextInput:
-						id: password
+						id: password_text
 						multiline: False
 						size_hint: (.5, .8)
 						on_text: root.checkPasswordField(self.text)
