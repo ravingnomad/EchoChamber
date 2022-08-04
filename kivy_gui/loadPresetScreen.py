@@ -116,16 +116,14 @@ class PresetScreenLayout(Screen):
         print("You clicked the 'Load' Button!")
         presetName = self._getPresetName(event.parent)
         print(f"The preset name is called: {presetName}\n")
+        self.manager.transition = SlideTransition(direction='left')
+        self.manager.current = "echoChamberMainScreen"
         
         
     def editPresetButton(self, event) -> None:
         presetName = self._getPresetName(event.parent)
         self.parent.editScreen.loadedPresetName = presetName
         self.parent.editScreen.loadedPresetInfo = self.samplePresetData[presetName]
-        #self.parent.editScreen.sms_widget.spinner_dropdown.text = self.samplePresetData[presetName]['sms']
-        #self.parent.editScreen.phone_widget.text_input.text = self.samplePresetData[presetName]['phone']
-        #self.parent.editScreen.email_widget.text_input.text = self.samplePresetData[presetName]['email']
-        #self.parent.editScreen.password_widget.text_input.text = self.samplePresetData[presetName]['password']
         self.manager.transition = SlideTransition(direction='left')
         self.manager.current = 'editPresetScreen'
     

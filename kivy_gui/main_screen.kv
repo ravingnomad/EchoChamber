@@ -78,6 +78,9 @@
 				size_hint: .2, .1
 				pos_hint: {"center_y": .5, "center_x": .5}
 				on_press: root.transferFile()
+				
+				
+				
 		FloatLayout:
 			id: bottom_screen
 			size_hint: (1, .15)
@@ -92,6 +95,7 @@
 				text: "Change Preset"
 				size_hint: (0.2, 0.2)
 				pos_hint: {"x": 0.1, "y": 0.45}
+				on_release: root.changePresetButton()
 				
 			Button:
 				id: view_preset_button

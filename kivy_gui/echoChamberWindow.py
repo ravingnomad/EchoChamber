@@ -6,6 +6,7 @@ from kivy.properties import ObjectProperty
 
 import loadPresetScreen
 import editPresetScreen
+import mainScreen
 
 
 
@@ -21,6 +22,7 @@ class echoChamberApp(App):
         Builder.load_file("echo_chamber_window.kv")
         Builder.load_file("load_preset_screen.kv")
         Builder.load_file("edit_preset_screen.kv")
+        Builder.load_file("main_screen.kv")
         manager = EchoChamberWindow()
         return manager
 
