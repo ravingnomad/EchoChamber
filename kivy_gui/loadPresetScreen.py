@@ -124,6 +124,7 @@ class PresetScreenLayout(Screen):
         presetName = self._getPresetName(event.parent)
         self.parent.editScreen.loadedPresetName = presetName
         self.parent.editScreen.loadedPresetInfo = self.samplePresetData[presetName]
+        self.parent.editScreen.screenEnteredFrom = "loadPresetScreen"
         self.manager.transition = SlideTransition(direction='left')
         self.manager.current = 'editPresetScreen'
     

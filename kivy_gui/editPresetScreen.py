@@ -32,6 +32,7 @@ class EditScreenLayout(Screen):
         self.fieldViolations = [0 for i in range(len(ViolationEnum))]
         self.validPasswordChars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~'
         self.allPresetNames = []
+        self.screenEnteredFrom = None
       
     
     def setText(self, field, text):
@@ -165,7 +166,7 @@ class EditScreenLayout(Screen):
 
     def exitButton(self):
         self.manager.transition = SlideTransition(direction = "right")
-        self.manager.current = 'loadPresetScreen'
+        self.manager.current = self.screenEnteredFrom
         
         
     def saveButton(self):
