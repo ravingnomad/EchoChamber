@@ -161,6 +161,8 @@
 	email_widget: email_widget
 	password_widget: password_widget
 	
+	save_button: save_button
+	
 	BoxLayout:
 		size: root.size
 		orientation: 'vertical'		
@@ -181,6 +183,7 @@
 					text_input: preset_text
 					TextInput:
 						id: preset_text
+						disabled_foreground_color: 0, 0, 0, 1
 						multiline: False
 						size_hint: (.8, .8)
 						on_text: root.checkPresetNameField(self.text)
@@ -189,6 +192,7 @@
 					spinner_dropdown: spinner_dropdown
 					Spinner:
 						id: spinner_dropdown
+    					disabled_color: 0, 0, 0, 1
 						text: "Click to choose SMS"
 						values: ["Verizon", "AT&T", "Sprint", "T-Mobile"]
 						on_text: root.checkSMSViolation()

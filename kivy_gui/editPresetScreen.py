@@ -23,7 +23,7 @@ class EditScreenLayout(Screen):
     phone_widget = ObjectProperty(None)
     email_widget = ObjectProperty(None)
     password_widget = ObjectProperty(None)
-    
+    save_button = ObjectProperty(None)
     
     def __init__(self, *args, **kwargs):
         super(EditScreenLayout, self).__init__(**kwargs)
@@ -66,10 +66,32 @@ class EditScreenLayout(Screen):
         self.allPresetNames = self.parent.presetScreen.samplePresetData.keys()
         self._checkEmptyFields()
         self.checkSMSViolation()
+        
+        if self.screenEnteredFrom == "echoChamberMainScreen":
+            self._disableWidgets()
 
+        
+    def _disableWidgets(self):
+        self.preset_widget.text_input.disabled = True
+        self.phone_widget.text_input.disabled = True
+        self.email_widget.text_input.disabled = True
+        self.password_widget.text_input.disabled = True
+        self.sms_widget.spinner_dropdown.disabled = True
+        self.save_button.disabled = True
+        
+        
+    def _enableWidgets(self):
+        self.preset_widget.text_input.disabled = False
+        self.phone_widget.text_input.disabled = False
+        self.email_widget.text_input.disabled = False
+        self.password_widget.text_input.disabled = False
+        self.sms_widget.spinner_dropdown.disabled = False
+        self.save_button.disabled = False
+        
         
     def on_leave(self):
         self._clearFields()
+        self._enableWidgets()
         
         
     def _clearFields(self):

@@ -30,9 +30,11 @@ class MainScreenLayout(Screen):
         
         
     def viewPresetButton(self):
+        self.parent.editScreen.screenEnteredFrom = "echoChamberMainScreen"
+        self.parent.editScreen.setText(self.parent.editScreen.preset_widget, "testing")
         self.manager.transition = SlideTransition(direction='left')
         self.manager.current = "editPresetScreen"
-        self.parent.editScreen.screenEnteredFrom = "echoChamberMainScreen"
+
         
         
     def exitButton(self):

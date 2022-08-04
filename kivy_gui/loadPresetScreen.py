@@ -113,9 +113,6 @@ class PresetScreenLayout(Screen):
     
     
     def loadPresetButton(self, event) -> None:
-        print("You clicked the 'Load' Button!")
-        presetName = self._getPresetName(event.parent)
-        print(f"The preset name is called: {presetName}\n")
         self.manager.transition = SlideTransition(direction='left')
         self.manager.current = "echoChamberMainScreen"
         
