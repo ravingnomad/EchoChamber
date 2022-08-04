@@ -29,6 +29,11 @@ class MainScreenLayout(Screen):
         self.manager.current = "loadPresetScreen"
         
         
+    def viewPresetButton(self):
+        self.manager.transition = SlideTransition(direction='left')
+        self.manager.current = "editPresetScreen"
+        
+        
     def exitButton(self):
         Window.close()
 
