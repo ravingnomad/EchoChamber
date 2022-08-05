@@ -1,20 +1,22 @@
-from kivy.properties import ObjectProperty
+from kivy.properties import ObjectProperty, StringProperty
 from kivy.uix.screenmanager import Screen, SlideTransition
 from kivy.core.window import Window
 
 import os 
 
-#Builder.load_file("main_screen.kv")
+
 
 class MainScreenLayout(Screen):
     computer_screen = ObjectProperty(None)
     phone_screen = ObjectProperty(None)
-    
+    preset_name = StringProperty()
+    formattedSMS = StringProperty()
         
     def on_enter(self):
         parentDirectory = os.path.join(os.getcwd(), os.pardir)
         self.computer_screen.file_list.path = parentDirectory
-        
+        self.preset_name = "testing"
+        self.formattedSMS = "PHONENUMBER@SMS"
         
     def transferFile(self):
         files = self.computer_screen.file_list.selection
@@ -31,7 +33,6 @@ class MainScreenLayout(Screen):
         
     def viewPresetButton(self):
         self.parent.editScreen.screenEnteredFrom = "echoChamberMainScreen"
-        self.parent.editScreen.setText(self.parent.editScreen.preset_widget, "testing")
         self.manager.transition = SlideTransition(direction='left')
         self.manager.current = "editPresetScreen"
 
@@ -39,10 +40,3 @@ class MainScreenLayout(Screen):
         
     def exitButton(self):
         Window.close()
-
-#class mainApp(App):
-#    def build(self):
-#        return MainScreenLayout()
-
-#if __name__ == "__main__":
-#    mainApp().run()

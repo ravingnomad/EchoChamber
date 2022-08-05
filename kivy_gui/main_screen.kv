@@ -6,13 +6,14 @@
 	BoxLayout:
 		top_screen: top_screen
 		bottom_screen: bottom_screen
+		
 		orientation: "vertical"
 		FloatLayout:
 			id: top_screen
 			Label:
 				size_hint: 1, .05
 				pos_hint: {'top': 1, 'center_x': .5}
-				text: "Using Preset: "
+				text: "Using Preset: {}".format(root.preset_name)
 				color: 0, 0, 0, 1
 				canvas.before: 
 					Color:
@@ -57,7 +58,7 @@
 						pos: self.pos
 						size: self.size
 				Label:
-					text: "Target: "
+					text: "Target: {}".format(root.formattedSMS)
 					size_hint: 1, .1
 					color: 0, 0, 0
 					canvas.before: 
