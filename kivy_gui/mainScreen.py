@@ -12,11 +12,18 @@ class MainScreenLayout(Screen):
     preset_name = StringProperty()
     formattedSMS = StringProperty()
         
-    def on_enter(self):
+        
+    def __init__(self, **kwargs):
+        super(MainScreenLayout, self).__init__(**kwargs)
+        self.presetInfo = {}
+        
+        
+    def on_pre_enter(self):
         parentDirectory = os.path.join(os.getcwd(), os.pardir)
         self.computer_screen.file_list.path = parentDirectory
-        self.preset_name = "testing"
         self.formattedSMS = "PHONENUMBER@SMS"
+        print(f"This is the preset info: {self.presetInfo}")
+        
         
     def transferFile(self):
         files = self.computer_screen.file_list.selection

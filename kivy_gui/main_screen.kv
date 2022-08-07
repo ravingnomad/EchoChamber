@@ -2,6 +2,7 @@
 <MainScreenLayout>
 	computer_screen: computer_screen
 	phone_screen: phone_screen
+	supported_files_label: supported_files_label
 	
 	BoxLayout:
 		top_screen: top_screen
@@ -17,7 +18,19 @@
 				color: 0, 0, 0, 1
 				canvas.before: 
 					Color:
-						rgba: 1, 1, 1, 1
+						rgba: 194/255, 203/255, 194/255, 1
+					Rectangle:
+						size: self.size
+						pos: self.pos
+			Label:
+				id: supported_files_label
+				size_hint: 1, .05
+				pos_hint: {'top': .95, 'center_x': .5}
+				text: "Only supporting XXXXX files."
+				color: 0, 0, 0, 1
+				canvas.before: 
+					Color:
+						rgba: 194/255, 203/255, 194/255, 1
 					Rectangle:
 						size: self.size
 						pos: self.pos
@@ -25,8 +38,8 @@
 				id: computer_screen
 				file_list: file_list
 				orientation: "vertical"
-				size_hint: .4, .8
-				pos_hint: {'left': 1, 'center_y': .5}
+				size_hint: .4, .9
+				pos_hint: {'left': 1, 'center_y': .45}
 				canvas.before:
 					Color:
 						rgba: 1, 1, 1, .1
@@ -49,8 +62,8 @@
 				id: phone_screen
 				transferred_files: transferred_files
 				orientation: "vertical"
-				size_hint: .4, .8
-				pos_hint: {"right": 1, "center_y": .5}
+				size_hint: .4, .9
+				pos_hint: {"right": 1, "center_y": .45}
 				canvas.before:
 					Color:
 						rgba: 1, 1, 1, .1
@@ -78,7 +91,7 @@
 				text: "Send File to Target"
 				size_hint: .2, .1
 				pos_hint: {"center_y": .5, "center_x": .5}
-				on_press: root.transferFile()
+				on_release: root.transferFile()
 				
 				
 				
