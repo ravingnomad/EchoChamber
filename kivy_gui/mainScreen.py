@@ -16,13 +16,17 @@ class MainScreenLayout(Screen):
     def __init__(self, **kwargs):
         super(MainScreenLayout, self).__init__(**kwargs)
         self.presetInfo = {}
+        self.supportedFileExt = ["webm", "gif", "jpeg", "jpg", "png", "img", "txt"]
+        self.smsAddress = {"Verizon": "@vtext.com",
+                           "AT&T": "@txt.att.net",
+                           "Sprint": "@messaging.sprintpcs.com", 
+                           "T-Mobile": "@tmomail.net"}
         
         
     def on_pre_enter(self):
         parentDirectory = os.path.join(os.getcwd(), os.pardir)
         self.computer_screen.file_list.path = parentDirectory
-        self.formattedSMS = "PHONENUMBER@SMS"
-        print(f"This is the preset info: {self.presetInfo}")
+        self._formatSMSAddress()
         
         
     def transferFile(self):
@@ -44,6 +48,10 @@ class MainScreenLayout(Screen):
         self.manager.current = "editPresetScreen"
 
         
+    def _formatSMSAddress(self):
+        smsAddress = self.smsAddress[self.presetInfo['sms']]
+        self.formattedSMS = self.presetInfo['phone'] + smsAddress
+
         
     def exitButton(self):
         Window.close()
