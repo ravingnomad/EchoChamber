@@ -9,6 +9,7 @@ import os
 class MainScreenLayout(Screen):
     computer_screen = ObjectProperty(None)
     phone_screen = ObjectProperty(None)
+    supported_files_label = ObjectProperty(None)
     preset_name = StringProperty()
     formattedSMS = StringProperty()
         
@@ -16,7 +17,7 @@ class MainScreenLayout(Screen):
     def __init__(self, **kwargs):
         super(MainScreenLayout, self).__init__(**kwargs)
         self.presetInfo = {}
-        self.supportedFileExt = ["webm", "gif", "jpeg", "jpg", "png", "img", "txt"]
+        self.supportedFileExt = ["mp4", "webm", "gif", "jpeg", "jpg", "png", "img", "txt"]
         self.smsAddress = {"Verizon": "@vtext.com",
                            "AT&T": "@txt.att.net",
                            "Sprint": "@messaging.sprintpcs.com", 
@@ -30,12 +31,22 @@ class MainScreenLayout(Screen):
         
         
     def transferFile(self):
-        files = self.computer_screen.file_list.selection
-        if files:
-            self.phone_screen.transferred_files.test_text.text = files[0] 
+        fileList = self.computer_screen.file_list.selection
+        if fileList and self._validFile(fileList):
+            self.supported_files_label.color = [0, 0, 0, 1]
+            self.phone_screen.transferred_files.test_text.text = fileList[0] 
         else:
-            self.phone_screen.transferred_files.test_text.text = "None"
+            self._invalidFile()
             
+            
+    def _validFile(self, fileList):
+        fileName = fileList[0].split('\\')[-1]
+        fileExtension = fileName.split('.')[-1].lower()
+        return fileExtension in self.supportedFileExt
+    
+    def _invalidFile(self):
+        self.supported_files_label.color = [1, 0, 0, 1]
+        
             
     def changePresetButton(self):
         self.manager.transition = SlideTransition(direction='right')
@@ -43,6 +54,8 @@ class MainScreenLayout(Screen):
         
         
     def viewPresetButton(self):
+        self.parent.editScreen.loadedPresetName = self.preset_name
+        self.parent.editScreen.loadedPresetInfo = self.presetInfo
         self.parent.editScreen.screenEnteredFrom = "echoChamberMainScreen"
         self.manager.transition = SlideTransition(direction='left')
         self.manager.current = "editPresetScreen"
