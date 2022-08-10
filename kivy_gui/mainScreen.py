@@ -44,6 +44,7 @@ class MainScreenLayout(Screen):
         fileExtension = fileName.split('.')[-1].lower()
         return fileExtension in self.supportedFileExt
     
+    
     def _invalidFile(self):
         self.supported_files_label.color = [1, 0, 0, 1]
         

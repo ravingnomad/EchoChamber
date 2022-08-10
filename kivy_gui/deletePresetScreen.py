@@ -1,12 +1,10 @@
-
 from kivy.properties import ObjectProperty
 from kivy.lang import Builder
-from kivy.app import App
-from kivy.uix.screenmanager import Screen
 from kivy.uix.popup import Popup
-import loadPresetScreen
 
-Builder.load_file("delete_preset_screen.kv")
+
+
+#Builder.load_file("delete_preset_screen.kv")
 
 class DeletePresetScreen(Popup):
     text_prompt = ObjectProperty(None)
