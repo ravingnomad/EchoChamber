@@ -45,9 +45,6 @@ class EchoChamberApp(App):
         manager = EchoChamberWindow(self.testInfo)
         return manager
     
-    
-    
-
 
 if __name__ == "__main__":
 

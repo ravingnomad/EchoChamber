@@ -5,63 +5,24 @@ from echoChamberServer import *
   
 from kivy.lang import Builder
 from kivy_gui import echoChamberWindow
+from mylib import pickleFileHandler
 
 import os
 
-def setupServer() -> None:
-    server = echoChamberServer(serverIPAddress, 65000)
-    infoInterface = userInfoInterface()
-    infoInterface.loadUserInfo()
-    while True:
-        action = input("\nWould you like to add or edit userinfo (add/edit)\n" \
-               "'ls' to see userinfo\n" \
-               "'q' to quit and start server\n"
-               "->")
-        if action == "add":
-            infoInterface.addUserInfo()
-        elif action == "edit":
-            infoInterface.editUserInfo()
-        elif action == "ls":
-            print(infoInterface.getUserInfo())
-        elif action == "q":
-            break
-        else:
-            print("Incorrect command\n")
-    infoInterface.saveUserInfo()
-    server.loadUserInfo(infoInterface.getUserInfo())
-    server.waitForClient()
-    server.start()
-    
-  
-def setupClient() -> None:
-    client = echoChamberClient(serverIPAddress, 65000)
-    interface = clientInterface()
-    client.connectToServer()
-    while True:
-        interface.promptCommands()
-        recentCommand = interface.getRecentCommand()
-        client.processCommands(recentCommand)
-        if client.getServerAskedToCompress() == True:
-            userAnswer = interface.promptCompressQuery()
-            client.sendCompressQueryAnswer(userAnswer)
-            client.continueSendingSMS()
-        if recentCommand == 'q':
-            break
-        
-  
-def main() -> None:
-    isClient = input("Is this machine the client machine? (y/n)\n ->")
-    while isClient not in ('y', 'n'):
-        print("ERROR: Incorrect response\n")
-        isClient = input("Is this machine the client machine? (y/n)\n ->")
-    if isClient == 'y':
-        setupClient()
-    if isClient == 'n':
-        setupServer()
 
+  #########switch to yahoo; seems gmail no longer supports sms messaging
+def main() -> None:
+    pickleHandler = pickleFileHandler.PickleFileHandler()
+    pickleHandler.loadPickle("users")
+    
+    pickleHandler.viewPickle()
+    info = pickleHandler._toBeSavedInfo
+    gui = echoChamberWindow.EchoChamberApp(info).run()
+    pickleHandler._toBeSavedInfo = info
+    pickleHandler.savePickle("users")
 
 if __name__ == "__main__":
-    serverIPAddress = ''
+    main()
 
     test = {"preset1": {'sms': 'Sprint', 'phone': '1111111111', 'email': 'example1@gmail.com', 'password': 'alonzo'},
                              "preset2": {'sms': 'Verizon', 'phone': '2222222222', 'email': 'example2@gmail.com', 'password': 'buttercup'},
@@ -74,5 +35,6 @@ if __name__ == "__main__":
                              "preset9": {'sms': 'T-Mobile', 'phone': '9999999999', 'email': 'example9@gmail.com', 'password': '80085boobs'},
                              "preset10": {'sms': 'T-Mobile', 'phone': '0000000000', 'email': 'example10@gmail.com', 'password': 'C@pi+an'}
                              }
-    gui = echoChamberWindow.EchoChamberApp(test).run()
+    
+    
     #main()

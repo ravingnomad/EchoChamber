@@ -8,7 +8,7 @@ class PickleFileHandler():
         self._numberOfEntriesSoFar = 0
         
         
-    def getPickle(self, keyName: str) -> object:
+    def get(self, keyName: str) -> object:
         try:
             return self._toBeSavedInfo[keyName]
         except KeyError:
@@ -16,7 +16,7 @@ class PickleFileHandler():
             return
         
         
-    def addPickle(self, entry, entryKey = None) -> None:
+    def add(self, entry, entryKey = None) -> None:
         key = f'Entry {self._numberOfEntriesSoFar + 1}'
         if entryKey != None:
             key = entryKey

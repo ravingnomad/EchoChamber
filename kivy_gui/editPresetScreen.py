@@ -158,7 +158,7 @@ class EditScreenLayout(Screen):
     
     def checkEmailField(self, text):
         splitText = text.split('@')
-        if len(splitText) != 2 or splitText[0] == "" or splitText[-1] != 'gmail.com' or text.strip() == "":
+        if len(splitText) != 2 or splitText[0] == "" or splitText[-1] != 'yahoo.com' or text.strip() == "":
             self.fieldViolations[ViolationEnum.emailViolation.value] = 1
             self._changeFieldColor(self.email_widget, 'red')
         else:

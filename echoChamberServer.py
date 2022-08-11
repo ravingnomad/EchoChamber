@@ -1,4 +1,4 @@
-import socket, struct, sys, os, smtplib, ffmpy
+import socket, struct, sys, os, smtplib, ffmpy, ssl
 from email import encoders
 from email.mime.application import MIMEApplication
 from email.mime.base import MIMEBase
@@ -10,10 +10,10 @@ from test.test_string_literals import byte
 
 class echoChamberServer(Connection):
 
-    def __init__(self, name, port):
+    def __init__(self):
         Connection.__init__(self, None)
-        self.name = name
-        self.port = port
+        #self.name = name
+        #self.port = port
         self.clientConn = None
         self.clientAddr = None
         self.endConnection = False
@@ -97,7 +97,8 @@ class echoChamberServer(Connection):
         return recipientName in self.validUsers.keys()
 
 
-    def _textFile(self, recipient: str, fileName: str) -> None:
+##########################################################
+    def _textFile(self, sms: str, email: str, password: str, fileName: str) -> None:
         """SMS limits sent file sizes to be around 1.8MB, so will check the size of the file and compress
         using FFmpeg. CURRENT COMPRESSION ONLY SUPPORTS MP4 AND WEBM. If file is still too large,
         will still attempt to send the file. There are no guarantees that delivery will be
@@ -105,49 +106,44 @@ class echoChamberServer(Connection):
         if compression used, must delete resulting compressed file after reading its info as errors will 
         arise if another compression occurs and saves with the same file name as the compressed file."""
         fileData = self._smsReadDataFromFile(fileName) 
-        mimeMsg = self._createMIME(fileData, fileName)
-        server = smtplib.SMTP("smtp.gmail.com", 587, None, 30)
-        server.starttls()
-        server.login(self.validUsers[recipient]['Email Address'], self.validUsers[recipient]['Email Password'])
-        server.sendmail('computer', self.validUsers[recipient]['SMS'], mimeMsg.as_string())
-        server.close()
-    
+        mimeMsg = self._createMIME(fileData, fileName, email, sms)
+        server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
+        server.ehlo()
+        server.login(email, password)
+        server.sendmail(email, [sms], mimeMsg.as_string())
+        server.quit()
+###########################################################    
     
     def _smsReadDataFromFile(self, fileName: str) -> byte:
         fileExtension = fileName.split('.')[-1].lower()
         fileData = None
-        if self._fileTooBig(fileName) and fileExtension in ('webm', 'mp4') and self._clientWantsToCompress():
-            self._compress(fileName, fileExtension)
-            with open(f'compressedFile.{fileExtension}', 'rb') as compressedFile:
-                fileData = compressedFile.read()
-            os.remove(f'compressedFile.{fileExtension}')
-        else:
-            self._sendData("No compression needed") #client expects a message asking if they want to compress
-            with open(fileName, 'rb') as file:
-                fileData = file.read()
+        #if self._fileTooBig(fileName) and fileExtension in ('webm', 'mp4') and self._clientWantsToCompress():
+        #    self._compress(fileName, fileExtension)
+        #    with open(f'compressedFile.{fileExtension}', 'rb') as compressedFile:
+        #        fileData = compressedFile.read()
+        #    os.remove(f'compressedFile.{fileExtension}')
+        #else:
+        #    self._sendData("No compression needed") #client expects a message asking if they want to compress
+        with open(fileName, 'rb') as file:
+            fileData = file.read()
         return fileData
     
     
-    def _clientWantsToCompress(self) -> bool:
-        self._sendData("Would you like to compress")
-        clientAnswer = self._recvStrData()
-        return clientAnswer == 'y'
-    
-    
-    def _createMIME(self, fileData: byte, fileName: str) -> MIMEMultipart:
+    def _createMIME(self, fileData: byte, fileName: str, email, sms) -> MIMEMultipart:
         fileExtension = fileName.split('.')[-1].lower()
         msg = MIMEMultipart()
         msg['Subject'] = 'Echo Chamber SMS'
-        msg['From'] = 'Server'
-        msg['To'] = 'Phone'
+        msg['From'] = "echo chamber"
+        msg['To'] = sms
         if fileExtension in ('webm', 'mp4'):
+            text = MIMEText("Video File")
+            msg.attach(text)
             data = MIMEBase('video', 'mp4')
             data.set_payload(fileData)
             encoders.encode_base64(data)
             data.add_header('Content-Disposition', 'attachment', filename = fileName)
             msg.attach(data)
-            text = MIMEText("Video File")
-            msg.attach(text)
+
         elif fileExtension == 'txt':
             text = MIMEText(fileData, _charset = "UTF-8")
             msg.attach(text)
