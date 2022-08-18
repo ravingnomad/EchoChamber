@@ -15,7 +15,7 @@ class EchoChamberWindow(ScreenManager):
     editScreen = ObjectProperty(None)
     def __init__(self, userInfo: {}):
         super(EchoChamberWindow, self).__init__()
-        self.presetScreen.samplePresetData = userInfo
+        self.presetScreen.presetData = userInfo
         
 
         
@@ -45,7 +45,3 @@ class EchoChamberApp(App):
         manager = EchoChamberWindow(self.testInfo)
         return manager
     
-
-if __name__ == "__main__":
-
-    EchoChamberApp().run()

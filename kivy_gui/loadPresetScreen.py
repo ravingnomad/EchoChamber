@@ -9,7 +9,6 @@ from kivy.lang import Builder
 import echoChamberWindow
 import deletePresetScreen
 
-#Builder.load_file("delete_preset_screen.kv")
 
 class PresetName(Button):
     def __init__(self, **kwargs):
@@ -46,7 +45,7 @@ class PresetScreenLayout(Screen):
                     "+Add New Preset": self.addNewPresetButton,
                     "Exit": self.exitButton
                     }
-        self.samplePresetData = {}
+        self.presetData = {}
         #self.samplePresetData = {"preset1": {'sms': 'Sprint', 'phone': '1111111111', 'email': 'example1@gmail.com', 'password': 'alonzo'},
         #                         "preset2": {'sms': 'Verizon', 'phone': '2222222222', 'email': 'example2@gmail.com', 'password': 'buttercup'},
         #                         "preset3": {'sms': 'Sprint', 'phone': '3333333333', 'email': 'example3@gmail.com', 'password': 'jazmina11'},
@@ -76,8 +75,8 @@ class PresetScreenLayout(Screen):
             
             
     def _loadPresetData(self, *args):
-        for preset in self.samplePresetData.keys():
-            test = BoxLayout(size = self.top_screen.size)
+        for preset in self.presetData.keys():
+            row = BoxLayout(size = self.top_screen.size)
             presetNameWidget = PresetName()
             loadButtonWidget = LoadButton()
             editButtonWidget = EditButton()
@@ -90,13 +89,14 @@ class PresetScreenLayout(Screen):
             
             presetNameLabel.text = f"{preset}"
             
-            test.add_widget(presetNameLabel)
-            test.add_widget(loadButton)
-            test.add_widget(editButton)
-            test.add_widget(deleteButton)
+            row.add_widget(presetNameLabel)
+            row.add_widget(loadButton)
+            row.add_widget(editButton)
+            row.add_widget(deleteButton)
             
-            self.top_screen.add_widget(widget = test)
-            test.size_hint_x = 1
+            row.size_hint_x = 1
+            self.top_screen.add_widget(widget = row)
+            
 
         
     def _copyButtonWidget(self, mainWidget) -> None:
@@ -118,7 +118,7 @@ class PresetScreenLayout(Screen):
     def loadPresetButton(self, event) -> None:
         presetName = self._getPresetName(event.parent)
         self.parent.mainScreen.preset_name = presetName
-        self.parent.mainScreen.presetInfo = self.samplePresetData[presetName]
+        self.parent.mainScreen.presetInfo = self.presetData[presetName]
         self.manager.transition = SlideTransition(direction='left')
         self.manager.current = "echoChamberMainScreen"
         
@@ -126,7 +126,7 @@ class PresetScreenLayout(Screen):
     def editPresetButton(self, event) -> None:
         presetName = self._getPresetName(event.parent)
         self.parent.editScreen.loadedPresetName = presetName
-        self.parent.editScreen.loadedPresetInfo = self.samplePresetData[presetName]
+        self.parent.editScreen.loadedPresetInfo = self.presetData[presetName]
         self.parent.editScreen.screenEnteredFrom = "loadPresetScreen"
         self.manager.transition = SlideTransition(direction='left')
         self.manager.current = 'editPresetScreen'
@@ -141,7 +141,7 @@ class PresetScreenLayout(Screen):
         
         
     def _deletePreset(self, presetName):
-        del self.samplePresetData[presetName]
+        del self.presetData[presetName]
         self.refreshScreen()
         
         

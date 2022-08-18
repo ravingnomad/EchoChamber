@@ -63,7 +63,7 @@ class EditScreenLayout(Screen):
             self.setText(self.phone_widget, self.loadedPresetInfo['phone'])
             self.setText(self.email_widget, self.loadedPresetInfo['email'])
             self.setText(self.password_widget, self.loadedPresetInfo['password'])
-        self.allPresetNames = self.parent.presetScreen.samplePresetData.keys()
+        self.allPresetNames = self.parent.presetScreen.presetData.keys()
         self._checkEmptyFields()
         self.checkSMSViolation()
         
@@ -197,9 +197,9 @@ class EditScreenLayout(Screen):
         self._checkEmptyFields()
         if self.hasFieldViolation() == False:
             if self._presetNameChanged():
-                del self.parent.presetScreen.samplePresetData[self.loadedPresetName]
+                del self.parent.presetScreen.presetData[self.loadedPresetName]
                 newPresetName = self.getText(self.preset_widget)
-                self.parent.presetScreen.samplePresetData[newPresetName] = {}
+                self.parent.presetScreen.presetData[newPresetName] = {}
             self._saveEntries()
             self.manager.transition = SlideTransition(direction = "right")
             self.manager.current = 'loadPresetScreen'
@@ -213,11 +213,11 @@ class EditScreenLayout(Screen):
         toSaveDict = {}
         currentPresetName = self.getText(self.preset_widget)
         if currentPresetName in self.allPresetNames:
-            toSaveDict = self.parent.presetScreen.samplePresetData[currentPresetName]
+            toSaveDict = self.parent.presetScreen.presetData[currentPresetName]
         toSaveDict['sms'] = self.getText(self.sms_widget)
         toSaveDict['phone'] = self.getText(self.phone_widget)
         toSaveDict['email'] = self.getText(self.email_widget)
         toSaveDict['password'] = self.getText(self.password_widget)
-        self.parent.presetScreen.samplePresetData[currentPresetName] = toSaveDict
+        self.parent.presetScreen.presetData[currentPresetName] = toSaveDict
 
         
