@@ -3,7 +3,7 @@ from kivy.uix.screenmanager import Screen, SlideTransition
 from kivy.core.window import Window
 
 import os
-import echoChamberServer
+import fileTransfer
 
 
 
@@ -36,7 +36,7 @@ class MainScreenLayout(Screen):
         if fileList and self._validFile(fileList):
             self.supported_files_label.color = [0, 0, 0, 1]
             self.phone_screen.transferred_files.test_text.text = fileList[0]
-            echoChamberServer.echoChamberServer()._textFile(self.formattedSMS, self.presetInfo['email'], self.presetInfo['password'], fileList[0])
+            fileTransfer.FileTransfer()._textFile(self.formattedSMS, self.presetInfo['email'], self.presetInfo['password'], fileList[0])
         else:
             self._invalidFile()
             

@@ -1,8 +1,3 @@
-from userInfoInterface import *
-from clientInterface import *
-from echoChamberClient import *
-from echoChamberServer import *
-  
 from kivy.lang import Builder
 from kivy_gui import echoChamberWindow
 from mylib import pickleFileHandler
@@ -10,7 +5,6 @@ from mylib import pickleFileHandler
 import os
 
 
-  #########switch to yahoo; seems gmail no longer supports sms messaging
 def main() -> None:
     pickleHandler = pickleFileHandler.PickleFileHandler()
     pickleHandler.loadPickle("users")
@@ -20,6 +14,8 @@ def main() -> None:
     gui = echoChamberWindow.EchoChamberApp(info).run()
     pickleHandler._toBeSavedInfo = info
     pickleHandler.savePickle("users")
+
+#anything >=8MB can't be sent
 
 if __name__ == "__main__":
     main()
