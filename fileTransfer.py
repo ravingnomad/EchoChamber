@@ -12,6 +12,7 @@ from moviepy.editor import VideoFileClip
 
 class FileTransfer():
 
+
     def __init__(self):
         self.fileSizeLimit = 7000000 #7 MB
         self.targetSize = 7000 #7 MB before calc
@@ -38,7 +39,7 @@ class FileTransfer():
         
         
     def _createMIME(self, fileName: str, email, sms):
-        fileExtension = fileName.split('.')[-1].lower()
+        fileExtension = self._getFileExtension(fileName)
         fileData = self._readDataFromFile(fileName)
         msg = MIMEMultipart()
         msg['Subject'] = 'Echo Chamber SMS'
@@ -66,7 +67,7 @@ class FileTransfer():
     
     def _readDataFromFile(self, fileName):
         if self._fileTooBig(fileName):
-            fileExtension = fileName.split('.')[-1].lower()
+            fileExtension = self._getFileExtension(fileName)
             #compress file based on its file extension
             self.compressionFuncs[fileExtension](fileName)
             compressedFileName = self._compressedFileNames[fileExtension]
@@ -92,7 +93,7 @@ class FileTransfer():
     
 
     def _compress(self, fileName):
-        fileExtension = fileName.split('.')[-1].lower()
+        fileExtension = self._getFileExtension(fileName)
         min_audio_bitrate = 32000
         max_audio_bitrate = 256000
         outputFileName = self._compressedFileNames[fileExtension]
@@ -113,4 +114,5 @@ class FileTransfer():
             print(e)
         
         
-
+    def _getFileExtension(self, fileName):
+        return fileName.split('.')[-1].lower()
