@@ -13,6 +13,7 @@ class MainScreenLayout(Screen):
     supported_files_label = ObjectProperty(None)
     preset_name = StringProperty()
     formattedSMS = StringProperty()
+    supportedFilesString = StringProperty()
         
         
     def __init__(self, **kwargs):
@@ -29,6 +30,7 @@ class MainScreenLayout(Screen):
         parentDirectory = os.path.join(os.getcwd(), os.pardir)
         self.computer_screen.file_list.path = parentDirectory
         self._formatSMSAddress()
+        self._formatSupportedFiles()
         
         
     def transferFile(self):
@@ -67,6 +69,10 @@ class MainScreenLayout(Screen):
     def _formatSMSAddress(self):
         smsAddress = self.smsAddress[self.presetInfo['sms']]
         self.formattedSMS = self.presetInfo['phone'] + smsAddress
+        
+    
+    def _formatSupportedFiles(self):
+        self.supportedFilesString = ', '.join(self.supportedFileExt)
 
         
     def exitButton(self):
