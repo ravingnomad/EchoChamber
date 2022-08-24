@@ -1,5 +1,3 @@
-
-
 from kivy.lang import Builder
 from kivy_gui import echoChamberWindow  # @UnresolvedImport
 from mylib import pickleFileHandler
@@ -21,18 +19,17 @@ import os, sys
 
 def main() -> None:
     pickleHandler = pickleFileHandler.PickleFileHandler()
-    pickleHandler.loadPickle("users")
+    pickleHandler.loadFile("users")
     
-    pickleHandler.viewPickle()
+    pickleHandler.view()
     info = pickleHandler._toBeSavedInfo
     gui = echoChamberWindow.EchoChamberApp(info).run()
     pickleHandler._toBeSavedInfo = info
-    pickleHandler.savePickle("users")
+    pickleHandler.save("users")
 
 
 #anything >=8MB can't be sent
 if __name__ == "__main__":
-    
     main()
     
 

@@ -36,12 +36,12 @@ class PickleFileHandler():
         self._toBeSavedInfo.clear()
         
         
-    def savePickle(self, pickleFileName: str) -> None:
+    def save(self, pickleFileName: str) -> None:
         with open(f'{pickleFileName}.pkl', 'wb') as pickleFile:
             pickle.dump(self._toBeSavedInfo, pickleFile)
         
         
-    def loadPickle(self, pickleFileName: str, overwrite = True) -> None:
+    def loadFile(self, pickleFileName: str, overwrite = True) -> None:
         '''Load a pickle file's data into the current handler and saves data into toBeSavedInfo; will overwrite or add to existing data depending
         on optional flag'''
         try:
@@ -55,7 +55,7 @@ class PickleFileHandler():
             print(f"ERROR: file '{pickleFileName}' does not exist") 
         
         
-    def viewPickle(self) -> None:
+    def view(self) -> None:
         print("KEY               VALUE")
         for key, value in self._toBeSavedInfo.items():
             print(f"{key}     :     {value}")
