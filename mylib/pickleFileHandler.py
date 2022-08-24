@@ -5,39 +5,36 @@ class PickleFileHandler():
     
     def __init__(self):
         self._toBeSavedInfo = {}
-        self._numberOfEntriesSoFar = 0
+        self._pickleFileName = None
         
         
-    def get(self, keyName: str) -> object:
-        try:
-            return self._toBeSavedInfo[keyName]
-        except KeyError:
-            print(f"ERROR: key '{keyName}' does not exist")
-            return
+    def getInfo(self):
+        return self._toBeSavedInfo
+        
+    
+    def setNewInfo(self, newInfo: dict):
+        '''Completely replaces old info with an entirely new one.'''
+        self._toBeSavedInfo = newInfo
         
         
-    def add(self, entry, entryKey = None) -> None:
-        key = f'Entry {self._numberOfEntriesSoFar + 1}'
-        if entryKey != None:
-            key = entryKey
-        self._numberOfEntriesSoFar += 1
+    def add(self, key, entry) -> None:
         self._toBeSavedInfo[key] = entry
         
         
-    def delPickle(self, key) -> None:
+    def delete(self, key) -> None:
         try: 
             del self._toBeSavedInfo[key]    
         except KeyError:
             print(f"ERROR: key '{key}' does not exist")
                 
  
-    def clearPickle(self) -> None:
+    def clear(self) -> None:
         '''Completely clear all info from handler that would have been saved into a pickle file'''
         self._toBeSavedInfo.clear()
         
         
-    def save(self, pickleFileName: str) -> None:
-        with open(f'{pickleFileName}.pkl', 'wb') as pickleFile:
+    def save(self) -> None:
+        with open(self._pickleFileName, 'wb') as pickleFile:
             pickle.dump(self._toBeSavedInfo, pickleFile)
         
         
@@ -45,14 +42,18 @@ class PickleFileHandler():
         '''Load a pickle file's data into the current handler and saves data into toBeSavedInfo; will overwrite or add to existing data depending
         on optional flag'''
         try:
-            with open(f'{pickleFileName}.pkl', 'rb') as pickleFile:
+            with open(pickleFileName, 'rb') as pickleFile:
                 pickleFileData = pickle.load(pickleFile)
                 if overwrite:
                     self._toBeSavedInfo = pickleFileData
                 else:
                     self._toBeSavedInfo.update(pickleFileData)
         except FileNotFoundError:
-            print(f"ERROR: file '{pickleFileName}' does not exist") 
+            print(f"ERROR: file '{pickleFileName}' does not exist. Creating a new empty file.")
+            with open(pickleFileName, 'wb') as newPickleFile:
+                pass
+        finally:
+           self._pickleFileName = pickleFileName 
         
         
     def view(self) -> None:

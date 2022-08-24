@@ -19,13 +19,13 @@ import os, sys
 
 def main() -> None:
     pickleHandler = pickleFileHandler.PickleFileHandler()
-    pickleHandler.loadFile("users")
+    pickleHandler.loadFile("users.pkl")
     
     pickleHandler.view()
-    info = pickleHandler._toBeSavedInfo
-    gui = echoChamberWindow.EchoChamberApp(info).run()
-    pickleHandler._toBeSavedInfo = info
-    pickleHandler.save("users")
+    userInfo = pickleHandler.getInfo()
+    gui = echoChamberWindow.EchoChamberApp(userInfo).run()
+    pickleHandler.setNewInfo(userInfo)
+    pickleHandler.save()
 
 
 #anything >=8MB can't be sent
