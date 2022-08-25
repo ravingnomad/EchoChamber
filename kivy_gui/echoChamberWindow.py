@@ -34,12 +34,14 @@ class EchoChamberApp(App):
             Builder.load_file("load_preset_screen.kv")
             Builder.load_file("edit_preset_screen.kv")
             Builder.load_file("delete_preset_screen.kv")
+            Builder.load_file("email_password_verify_screen.kv")
             Builder.load_file("main_screen.kv")
         else:
             Builder.load_file(".\kivy_gui\echo_chamber_window.kv")
             Builder.load_file(".\kivy_gui\load_preset_screen.kv")
             Builder.load_file(".\kivy_gui\edit_preset_screen.kv")
             Builder.load_file(".\kivy_gui\delete_preset_screen.kv")
+            Builder.load_file(".\kivy_gui\email_password_verify_screen.kv")
             Builder.load_file(".\kivy_gui\main_screen.kv")
             pass
         manager = EchoChamberWindow(self.testInfo)

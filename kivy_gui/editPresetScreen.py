@@ -4,6 +4,7 @@ from kivy.uix.screenmanager import Screen, SlideTransition
 import smtplib
 import enum
 import echoChamberWindow
+import emailPasswordVerifyScreen
 
 
 
@@ -184,23 +185,26 @@ class EditScreenLayout(Screen):
     
     
     def verifyPwdEmail(self):
+        msgString = "Valid email and password."
         try:
-            email = self.loadedPresetInfo['email']
-            password = self.loadedPresetInfo['password']
+            email = self.getText(self.email_widget)
+            password = self.getText(self.password_widget)
             server = smtplib.SMTP("smtp.mail.yahoo.com", 587)
             server.ehlo()
             server.starttls()
             server.ehlo()
             server.login(email, password)
             server.quit()
-            print("No problems!")
         except smtplib.SMTPServerDisconnected:
-            print("ERROR: Incorrect email and/or password. Please check.")
+            msgString = "ERROR: Email and/or password are incorrect and cannot be used\n to login to the specified email. Please check." 
+        except TypeError:
+            msgString = "ERROR: Email and/or password must not be empty."
+        finally:
+            popUpObject = emailPasswordVerifyScreen.EmailPasswordVerifyScreen(msgString)
+            popUpObject.open()
             
             
 
-            
-        
 
     def exitButton(self):
         self.manager.transition = SlideTransition(direction = "right")
