@@ -4,6 +4,8 @@ from kivy.core.window import Window
 
 import os
 import fileTransfer
+import emailPasswordVerifyScreen
+import smtplib
 
 
 
@@ -34,14 +36,18 @@ class MainScreenLayout(Screen):
         
         
     def transferFile(self):
-        fileList = self.computer_screen.file_list.selection
-        if fileList and self._validFile(fileList):
-            self.supported_files_label.color = [0, 0, 0, 1]
-            self.phone_screen.transferred_files.test_text.text = fileList[0]
-            fileTransfer.FileTransfer()._textFile(self.formattedSMS, self.presetInfo['email'], self.presetInfo['password'], fileList[0])
-        else:
-            self._invalidFile()
-            
+        try:
+            fileList = self.computer_screen.file_list.selection
+            if fileList and self._validFile(fileList):
+                self.supported_files_label.color = [0, 0, 0, 1]
+                self.phone_screen.transferred_files.test_text.text = fileList[0]
+                fileTransfer.FileTransfer()._textFile(self.formattedSMS, self.presetInfo['email'], self.presetInfo['password'], fileList[0])
+            else:
+                self._invalidFile()
+        except smtplib.SMTPServerDisconnected:
+            msgString = "ERROR: Failed to send file to target due to incorrect email and/or password.\n Please check." 
+            popUpObject = emailPasswordVerifyScreen.EmailPasswordVerifyScreen(msgString)
+            popUpObject.open()
             
     def _validFile(self, fileList):
         fileName = fileList[0].split('\\')[-1]
