@@ -14,7 +14,7 @@ class MainScreenLayout(Screen):
     phone_screen = ObjectProperty(None)
     supported_files_label = ObjectProperty(None)
     preset_name = StringProperty()
-    formattedSMS = StringProperty()
+    formattedTarget = StringProperty()
     supportedFilesString = StringProperty()
         
         
@@ -22,16 +22,13 @@ class MainScreenLayout(Screen):
         super(MainScreenLayout, self).__init__(**kwargs)
         self.presetInfo = {}
         self.supportedFileExt = ["mp4", "webm", "gif", "jpeg", "jpg", "png", "img", "txt"]
-        self.smsAddress = {"Verizon": "@vtext.com",
-                           "AT&T": "@txt.att.net",
-                           "Sprint": "@messaging.sprintpcs.com", 
-                           "T-Mobile": "@tmomail.net"}
+
         
         
     def on_pre_enter(self):
         parentDirectory = os.path.join(os.getcwd(), os.pardir)
         self.computer_screen.file_list.path = parentDirectory
-        self._formatSMSAddress()
+        self._formatFileTarget()
         self._formatSupportedFiles()
         
         
@@ -41,13 +38,14 @@ class MainScreenLayout(Screen):
             if fileList and self._validFile(fileList):
                 self.supported_files_label.color = [0, 0, 0, 1]
                 self.phone_screen.transferred_files.test_text.text = fileList[0]
-                fileTransfer.FileTransfer()._textFile(self.formattedSMS, self.presetInfo['email'], self.presetInfo['password'], fileList[0])
+                fileTransfer.FileTransfer()._textFile(self.presetInfo['carrier'], self.presetInfo['phone'], self.presetInfo['email'], self.presetInfo['password'], fileList[0])
             else:
                 self._invalidFile()
         except smtplib.SMTPServerDisconnected:
             msgString = "ERROR: Failed to send file to target due to incorrect email and/or password.\n Please check." 
             popUpObject = emailPasswordVerifyScreen.EmailPasswordVerifyScreen(msgString)
             popUpObject.open()
+            
             
     def _validFile(self, fileList):
         fileName = fileList[0].split('\\')[-1]
@@ -71,12 +69,16 @@ class MainScreenLayout(Screen):
         self.manager.transition = SlideTransition(direction='left')
         self.manager.current = "editPresetScreen"
 
-        
-    def _formatSMSAddress(self):
-        smsAddress = self.smsAddress[self.presetInfo['sms']]
-        self.formattedSMS = self.presetInfo['phone'] + smsAddress
+    
+    
+    #Formats the string will be displayed on the echo chamber main screen
+    #naming the target of the transferred file(s)
+    def _formatFileTarget(self):
+        self.formattedTarget = f"{self.presetInfo['phone']}\nCarrier: {self.presetInfo['carrier']}"
         
     
+    #Formats the string that will be displayed on the echo chamber main screen
+    #listing the supported files
     def _formatSupportedFiles(self):
         self.supportedFilesString = ', '.join(self.supportedFileExt)
 

@@ -10,7 +10,7 @@ import emailPasswordVerifyScreen
 
 class ViolationEnum(enum.Enum):
     presetViolation = 0
-    smsViolation = 1
+    carrierViolation = 1
     phoneViolation = 2
     emailViolation = 3
     passwordViolation = 4
@@ -21,7 +21,7 @@ class ViolationEnum(enum.Enum):
 
 class EditScreenLayout(Screen):
     preset_widget = ObjectProperty(None)
-    sms_widget = ObjectProperty(None)
+    carrier_widget = ObjectProperty(None)
     phone_widget = ObjectProperty(None)
     email_widget = ObjectProperty(None)
     password_widget = ObjectProperty(None)
@@ -38,14 +38,14 @@ class EditScreenLayout(Screen):
       
     
     def setText(self, field, text):
-        if field == self.sms_widget:
+        if field == self.carrier_widget:
             field.spinner_dropdown.text = text 
         else:
             field.text_input.text = text
     
     
     def getText(self, field):
-        if field == self.sms_widget:
+        if field == self.carrier_widget:
             return field.spinner_dropdown.text
         return field.text_input.text
     
@@ -61,13 +61,13 @@ class EditScreenLayout(Screen):
         if self.loadedPresetName != None:
             self.setText(self.preset_widget, self.loadedPresetName)
         if self.loadedPresetInfo != None:
-            self.setText(self.sms_widget, self.loadedPresetInfo['sms'])
+            self.setText(self.carrier_widget, self.loadedPresetInfo['carrier'])
             self.setText(self.phone_widget, self.loadedPresetInfo['phone'])
             self.setText(self.email_widget, self.loadedPresetInfo['email'])
             self.setText(self.password_widget, self.loadedPresetInfo['password'])
         self.allPresetNames = self.parent.presetScreen.presetData.keys()
         self._checkEmptyFields()
-        self.checkSMSViolation()
+        self.checkCarrierViolation()
         
         if self.screenEnteredFrom == "echoChamberMainScreen":
             self._disableWidgets()
@@ -78,7 +78,7 @@ class EditScreenLayout(Screen):
         self.phone_widget.text_input.disabled = True
         self.email_widget.text_input.disabled = True
         self.password_widget.text_input.disabled = True
-        self.sms_widget.spinner_dropdown.disabled = True
+        self.carrier_widget.spinner_dropdown.disabled = True
         self.save_button.disabled = True
         
         
@@ -87,7 +87,7 @@ class EditScreenLayout(Screen):
         self.phone_widget.text_input.disabled = False
         self.email_widget.text_input.disabled = False
         self.password_widget.text_input.disabled = False
-        self.sms_widget.spinner_dropdown.disabled = False
+        self.carrier_widget.spinner_dropdown.disabled = False
         self.save_button.disabled = False
         
         
@@ -100,7 +100,7 @@ class EditScreenLayout(Screen):
         self.setText(self.preset_widget, "")
         self.loadedPresetName = None
         self.loadedPresetInfo = None
-        self.setText(self.sms_widget, "Click to choose SMS")
+        self.setText(self.carrier_widget, "Click to choose carrier")
         self.setText(self.phone_widget, "")
         self.setText(self.email_widget, "")
         self.setText(self.password_widget, "")
@@ -133,11 +133,11 @@ class EditScreenLayout(Screen):
             self._changeFieldColor(field, 'red')
             
             
-    def checkSMSViolation(self):
-        if self.getText(self.sms_widget) == "Click to choose SMS":
-            self.fieldViolations[ViolationEnum.smsViolation.value] = 1
+    def checkCarrierViolation(self):
+        if self.getText(self.carrier_widget) == "Click to choose carrier":
+            self.fieldViolations[ViolationEnum.carrierViolation.value] = 1
         else:
-            self.fieldViolations[ViolationEnum.smsViolation.value] = 0
+            self.fieldViolations[ViolationEnum.carrierViolation.value] = 0
             
             
     def checkPresetNameField(self, text):
@@ -234,7 +234,7 @@ class EditScreenLayout(Screen):
         currentPresetName = self.getText(self.preset_widget)
         if currentPresetName in self.allPresetNames:
             toSaveDict = self.parent.presetScreen.presetData[currentPresetName]
-        toSaveDict['sms'] = self.getText(self.sms_widget)
+        toSaveDict['carrier'] = self.getText(self.carrier_widget)
         toSaveDict['phone'] = self.getText(self.phone_widget)
         toSaveDict['email'] = self.getText(self.email_widget)
         toSaveDict['password'] = self.getText(self.password_widget)

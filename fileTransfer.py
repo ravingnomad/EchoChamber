@@ -25,17 +25,32 @@ class FileTransfer():
         self.compressionFuncs = {'webm': self._compress,
                                  'mp4': self._compress,
                                  'gif': self._convertGifToWebm}
+        self.carrierAddresses = {"Verizon": {"sms": "@vtext.com", "mms": "@vzwpix.com"},
+                   "AT&T": {"sms": "@txt.att.net", "mms": "@mms.att.net"},
+                   "Sprint": {"sms": "@messaging.sprintpcs.com", "mms": "@pm.sprint.com"}, 
+                   "T-Mobile": {"sms": "@tmomail.net", "mms": "@tmomail.net"}}
 
 
-    def _textFile(self, sms, email, password, fileName):
-        mimeMsg = self._createMIME(fileName, email, sms)
+    def _textFile(self, carrier, phoneNumber, email, password, fileName):
+        messageAddress = self.formatMsgAddr(fileName, carrier, phoneNumber)
+        mimeMsg = self._createMIME(fileName, email, messageAddress)
         server = smtplib.SMTP("smtp.mail.yahoo.com", 587)
         server.ehlo()
         server.starttls()
         server.ehlo()
         server.login(email, password)
-        server.sendmail(email, [sms], mimeMsg.as_string())
+        server.sendmail(email, [messageAddress], mimeMsg.as_string())
         server.quit()
+        
+        
+    def formatMsgAddr(self, fileName, carrier, phoneNumber):
+        extension = self._getFileExtension(fileName)
+        address = phoneNumber
+        if extension in ["mp4", "webm", "gif"]:
+            address += self.carrierAddresses[carrier]['mms']
+        else:
+            address += self.carrierAddresses[carrier]['sms']
+        return address
         
         
     def _createMIME(self, fileName: str, email, sms):

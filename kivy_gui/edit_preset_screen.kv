@@ -30,7 +30,7 @@
 
 
 
-<SMS@BoxLayout>
+<Carrier@BoxLayout>
 	field_label: field_label
 	orientation: "horizontal"
 	canvas.before:
@@ -43,7 +43,7 @@
 		id: field_label
 		text_size: self.width, None
 		height: self.texture_size[1]
-		text: "SMS (Short Message Service): "
+		text: "Phone Carrier: "
 		color: 0, 102/255, 0, 1
 		size_hint: (.5, 1)
 		pos: "600dp", 0
@@ -177,7 +177,7 @@
 	
 <EditScreenLayout>
 	preset_widget: preset_widget
-	sms_widget: sms_widget
+	carrier_widget: carrier_widget
 	phone_widget: phone_widget
 	email_widget: email_widget
 	password_widget: password_widget
@@ -207,15 +207,15 @@
 						multiline: False
 						size_hint: (.8, .8)
 						on_text: root.checkPresetNameField(self.text)
-				SMS:
-					id: sms_widget
+				Carrier:
+					id: carrier_widget
 					spinner_dropdown: spinner_dropdown
 					Spinner:
 						id: spinner_dropdown
     					disabled_color: 0, 0, 0, 1
-						text: "Click to choose SMS"
+						text: "Click to choose carrier"
 						values: ["Verizon", "AT&T", "Sprint", "T-Mobile"]
-						on_text: root.checkSMSViolation()
+						on_text: root.checkCarrierViolation()
 				Phone:
 					id: phone_widget
 					text_input: phone_text
