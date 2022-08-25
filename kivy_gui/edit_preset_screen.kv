@@ -1,7 +1,6 @@
 <Preset@BoxLayout>
 	field_label: field_label
 	requirement_text: requirement_text
-	
 	orientation: "horizontal"
 	canvas.before:
 		Color: 
@@ -30,9 +29,9 @@
 		size_hint: (.4, 1)
 
 
+
 <SMS@BoxLayout>
 	field_label: field_label
-	
 	orientation: "horizontal"
 	canvas.before:
 		Color: 
@@ -60,7 +59,6 @@
 <Phone@BoxLayout>
 	field_label: field_label
 	requirement_text: requirement_text
-	
 	orientation: "horizontal"
 	canvas.before:
 		Color: 
@@ -93,7 +91,6 @@
 <Email@BoxLayout>
 	field_label: field_label
 	requirement_text: requirement_text
-	
 	orientation: "horizontal"
 	canvas.before:
 		Color: 
@@ -122,10 +119,10 @@
 		size_hint: (0.3, 1)
 
 
+
 <Password@BoxLayout>
 	field_label: field_label
 	requirement_text: requirement_text
-	
 	orientation: "horizontal"
 	canvas.before:
 		Color: 
@@ -147,12 +144,36 @@
 			Rectangle:
 				size: self.size
 				pos: self.pos
-
 	Label:
 		id: requirement_text
 		text: "*Password must be the password for your gmail account.\nOnly alphanumeric and/or ASCII characters "
 		color: 0, 0, 0, 1
 		
+		
+		
+<VerifyEmail@BoxLayout>
+	size_hint: None, 1
+	width: "300dp"
+	canvas.before:
+		Color: 
+			rgba: 1, 1, 1, 1
+		Rectangle:
+			size: self.size
+			pos: self.pos
+	Label:
+		id: field_label
+		text_size: self.width, None
+		height: self.texture_size[1]
+		text: "Verify email and password: "
+		color: 0, 102/255, 0, 1
+		canvas.before:
+			Color: 
+				rgba: 194/255, 203/255, 194/255, 1
+			Rectangle:
+				size: self.size
+				pos: self.pos
+		
+	
 	
 <EditScreenLayout>
 	preset_widget: preset_widget
@@ -160,9 +181,8 @@
 	phone_widget: phone_widget
 	email_widget: email_widget
 	password_widget: password_widget
-	
+	verify_widget: verify_widget
 	save_button: save_button
-	
 	BoxLayout:
 		size: root.size
 		orientation: 'vertical'		
@@ -220,8 +240,14 @@
 						multiline: False
 						size_hint: (.5, .8)
 						on_text: root.checkPasswordField(self.text)
-				
-
+				VerifyEmail:
+					Button:
+						id: verify_widget
+						text: "Verify"
+						size: "150dp", "45dp"
+						size_hint: (None, 1)
+						on_release: root.verifyPwdEmail()
+						
 		FloatLayout:
 			id: bottom_screen
 			size_hint: (1, .15)

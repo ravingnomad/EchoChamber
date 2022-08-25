@@ -1,6 +1,7 @@
 from kivy.properties import ObjectProperty
 from kivy.uix.screenmanager import Screen, SlideTransition
 
+import smtplib
 import enum
 import echoChamberWindow
 
@@ -180,6 +181,21 @@ class EditScreenLayout(Screen):
             if char not in self.validPasswordChars:
                 return False
         return True
+    
+    
+    def verifyPwdEmail(self):
+        try:
+            email = self.loadedPresetInfo['email']
+            password = self.loadedPresetInfo['password']
+            server = smtplib.SMTP("smtp.mail.yahoo.com", 587)
+            server.ehlo()
+            server.starttls()
+            server.ehlo()
+            server.login(email, password)
+            server.quit()
+            print("No problems!")
+        except smtplib.SMTPServerDisconnected:
+            print("ERROR: Incorrect email and/or password. Please check.")
             
             
 
