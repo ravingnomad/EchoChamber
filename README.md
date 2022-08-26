@@ -38,9 +38,9 @@ ___
 # How to Use
 1. Open the main.py module and click on "Add New Preset" to enter the required user information.
     * **NOTE**: In order to correctly login to yahoo mail through this program, the user needs to setup an **[app password](https://support.reolink.com/hc/en-us/articles/360039239274-How-to-Generate-an-APP-Password-in-Yahoo-Email-Account)** in their yahoo account and use this app password as their email password when entering their information.
-![Adding New Preset GIF](/readme assets/Adding New Preset.gif)
+![Adding New Preset GIF](https://github.com/ravingnomad/EchoChamber/blob/master/readme%20assets/Adding%20New%20Preset.gif)
 
 2. Click the **"Save"** button to exit out of the preset info screen back to the main screen and click the **"Load"** button next to the desired preset.
-    ![Loading Preset GIF](/readme assets/Loading Preset.gif)
+    ![Loading Preset GIF](https://github.com/ravingnomad/EchoChamber/blob/master/readme%20assets/Loading%20Preset.gif)
 3. On the left hand side of the screen, navigate to the desired file (must be a file that is supported), then click on **"Send File to Target"** to send file to cellphone as a text message attachment.
 
