@@ -24,7 +24,7 @@ class MainScreenLayout(Screen):
         self.supportedFileExt = ["mp4", "webm", "gif", "jpeg", "jpg", "png", "img", "txt"]
 
         
-        
+    #before this screen appears, open widget to show parent directory and display supported file text and target text
     def on_pre_enter(self):
         parentDirectory = os.path.join(os.getcwd(), os.pardir)
         self.computer_screen.file_list.path = parentDirectory
@@ -36,11 +36,11 @@ class MainScreenLayout(Screen):
         try:
             fileList = self.computer_screen.file_list.selection
             if fileList and self._validFile(fileList):
-                self.supported_files_label.color = [0, 0, 0, 1]
+                self._changeSupportedFileTextColor("black")
                 self.phone_screen.transferred_files.test_text.text = fileList[0]
                 fileTransfer.FileTransfer()._textFile(self.presetInfo['carrier'], self.presetInfo['phone'], self.presetInfo['email'], self.presetInfo['password'], fileList[0])
             else:
-                self._invalidFile()
+                self._changeSupportedFileTextColor("red")
         except smtplib.SMTPServerDisconnected:
             msgString = "ERROR: Failed to send file to target due to incorrect email and/or password.\n Please check." 
             popUpObject = emailPasswordVerifyScreen.EmailPasswordVerifyScreen(msgString)
@@ -53,8 +53,12 @@ class MainScreenLayout(Screen):
         return fileExtension in self.supportedFileExt
     
     
-    def _invalidFile(self):
-        self.supported_files_label.color = [1, 0, 0, 1]
+    #change to red if unsupported; black if supported   
+    def _changeSupportedFileTextColor(self, color):
+        if color == "red":
+            self.supported_files_label.color = [1, 0, 0, 1]
+        elif color == "black":
+            self.supported_files_label.color = [0, 0, 0, 1]
         
             
     def changePresetButton(self):
@@ -71,7 +75,7 @@ class MainScreenLayout(Screen):
 
     
     
-    #Formats the string will be displayed on the echo chamber main screen
+    #Formats the string that will be displayed on the echo chamber main screen
     #naming the target of the transferred file(s)
     def _formatFileTarget(self):
         self.formattedTarget = f"{self.presetInfo['phone']}\nCarrier: {self.presetInfo['carrier']}"

@@ -7,7 +7,9 @@ import echoChamberWindow
 import emailPasswordVerifyScreen
 
 
-
+#used to check for field violations; these act as indices in a list in EditScreenLayout; if any
+#element in the list is a 1, means there is a violation; a lot more legible and less cumbersome than
+#having a disinct bool for every field to check for violations
 class ViolationEnum(enum.Enum):
     presetViolation = 0
     carrierViolation = 1
@@ -26,6 +28,7 @@ class EditScreenLayout(Screen):
     email_widget = ObjectProperty(None)
     password_widget = ObjectProperty(None)
     save_button = ObjectProperty(None)
+    
     
     def __init__(self, *args, **kwargs):
         super(EditScreenLayout, self).__init__(**kwargs)
@@ -68,7 +71,7 @@ class EditScreenLayout(Screen):
         self.allPresetNames = self.parent.presetScreen.presetData.keys()
         self._checkEmptyFields()
         self.checkCarrierViolation()
-        
+        #disable ability to edit fields if entered from echo chamber main screen
         if self.screenEnteredFrom == "echoChamberMainScreen":
             self._disableWidgets()
 
@@ -184,6 +187,10 @@ class EditScreenLayout(Screen):
         return True
     
     
+    #check to see if email and email password can be used to login to email;
+    #checks by logging into email through smtplib; if success, no exceptions are raised; otherwise
+    #SMTPServerDisconnected is raised if password invalid; TypeError is raised if 
+    #email is empty
     def verifyPwdEmail(self):
         msgString = "Valid email and password."
         try:
@@ -212,8 +219,10 @@ class EditScreenLayout(Screen):
         
         
     def saveButton(self):
-        #have to check; no trigger event that can trigger a check for all fields only once; if don't check, when adding new preset, 
-        #this field violation will still have its flag raised
+        #have to check for empty fields and reset empty field violation flag; there is no trigger event/callback
+        #that allows for resetting of the empty fields violation flag when all
+        #fields are non-empty, unless a check is made after each entry of each field
+        #if don't check, when adding new preset, this empty fields violation will still have its flag raised 
         self._checkEmptyFields()
         if self.hasFieldViolation() == False:
             if self._presetNameChanged():

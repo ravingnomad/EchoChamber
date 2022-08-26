@@ -25,6 +25,7 @@ class EchoChamberApp(App):
         super(EchoChamberApp, self).__init__()
         self.testInfo = testInfo
     
+    #if this is imported into another module, have to use relative path to load the kv files
     def build(self):
         currFilePath = os.path.abspath(__file__)
         kivyGUIDirPath = os.path.abspath(os.path.join(currFilePath, os.pardir))

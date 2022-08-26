@@ -14,14 +14,19 @@ class FileTransfer():
 
 
     def __init__(self):
-        self.fileSizeLimit = 7000000 #7 MB
-        self.targetSize = 7000 #7 MB before calc
+        #7 MB; size limited by phone carrier
+        self.fileSizeLimit = 7000000 
+        #7 MB before calculation
+        self.targetSize = 7000 
+        #bitrate used for conversion of large gif files to smaller webm files
         #have to be careful; this bit rate MUST allow for subsequent webm file 
         #to be under 7MB limit
         self._webmBitrate = "4500k"
         self._compressedFileNames = {'webm': "compressedFile.mp4",
                                      'mp4': "compressedFile.mp4",
                                      'gif': "compressedFile.webm"}
+        #dict that stores compression function names
+        #compress file based on its file extension
         self.compressionFuncs = {'webm': self._compress,
                                  'mp4': self._compress,
                                  'gif': self._convertGifToWebm}
@@ -31,6 +36,11 @@ class FileTransfer():
                    "T-Mobile": {"sms": "@tmomail.net", "mms": "@tmomail.net"}}
 
 
+
+    #Have to use yahoo mail as gmail seems to no longer support
+    #emails that send directly to phone (both MMS and SMS)
+    #TODO: see if there are any other email options that support texting directly
+    #to phone; include support for them is so
     def _textFile(self, carrier, phoneNumber, email, password, fileName):
         messageAddress = self.formatMsgAddr(fileName, carrier, phoneNumber)
         mimeMsg = self._createMIME(fileName, email, messageAddress)
@@ -53,6 +63,9 @@ class FileTransfer():
         return address
         
         
+    #Have to attach video files to MIME email as webm
+    #otherwise, yahoo mail will either not be able to send it or
+    #the quality of the file drops drastically
     def _createMIME(self, fileName: str, email, sms):
         fileExtension = self._getFileExtension(fileName)
         fileData = self._readDataFromFile(fileName)
@@ -83,7 +96,6 @@ class FileTransfer():
     def _readDataFromFile(self, fileName):
         if self._fileTooBig(fileName):
             fileExtension = self._getFileExtension(fileName)
-            #compress file based on its file extension
             self.compressionFuncs[fileExtension](fileName)
             compressedFileName = self._compressedFileNames[fileExtension]
             with open(compressedFileName, 'rb') as compressedFile:
@@ -107,6 +119,9 @@ class FileTransfer():
         gifClip.write_videofile(compressedFileName, bitrate = self._webmBitrate)
     
 
+    #code to calculate file target size and use ffmpeg to compress came from here:
+    #https://stackoverflow.com/questions/64430805/how-to-compress-video-to-target-size-by-python
+    #currently using min audio bitrate as phone carriers have drastically smaller file size limits than emails
     def _compress(self, fileName):
         fileExtension = self._getFileExtension(fileName)
         min_audio_bitrate = 32000
